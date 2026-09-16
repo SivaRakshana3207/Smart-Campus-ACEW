@@ -872,8 +872,7 @@
                     </div>
 
                     <div class="voice-subtitle">
-                        Say "Open Bus Routes", "Food Court",
-                        "Outpass" or "Announcements"
+                        Say "Take me to the library" or ask for any campus service
                     </div>
 
                 </div>
@@ -1426,7 +1425,7 @@
         const recognition =
             new SpeechRecognition();
 
-        recognition.lang = 'en-IN';
+        recognition.lang = navigator.language || 'en-IN';
 
         recognition.continuous = false;
 
@@ -1456,90 +1455,112 @@
         });
 
 
+        const campusName = 'Arunachala College of Engineering for Women';
+        const campusAddress = `${campusName}, Manavilai Rd, Manavilai, Nagercoil, Vellichanthai, Tamil Nadu 629203, India`;
+        const campusDestinations = [
+            { name: 'Library', aliases: ['library', 'central library', 'book room', 'noolagam', 'pustakalaya', 'நூலகம்', 'पुस्तकालय'] },
+            { name: 'Canteen', aliases: ['canteen', 'food court', 'cafeteria', 'mess', 'unavu', 'உணவகம்', 'கேன்டீன்', 'कैंटीन'] },
+            { name: 'Main Gate', aliases: ['main gate', 'college gate', 'entrance', 'entrance gate', 'நுழைவாயில்', 'मुख्य द्वार'] },
+            { name: 'Admin Block', aliases: ['admin block', 'administration block', 'principal office', 'admin office', 'நிர்வாக கட்டிடம்', 'प्रशासनिक ब्लॉक'] },
+            { name: 'Main Academic Block', aliases: ['main academic block', 'academic block', 'main block'] },
+            { name: 'ECE Block', aliases: ['ece block', 'electronics block', 'ece department'] },
+            { name: 'Sports Complex', aliases: ['sports complex', 'sports ground', 'playground', 'ground', 'விளையாட்டு மைதானம்', 'खेल मैदान'] },
+            { name: 'Seetha Lakshmi Hostel Block A', aliases: ['hostel', 'hostels', 'hostel a', 'seetha lakshmi hostel', 'seetha lakshmi hostel block a', 'விடுதி', 'छात्रावास'] },
+            { name: 'AI and DS Compute Lab', aliases: ['ai ds lab', 'ai and ds lab', 'compute lab', 'artificial intelligence lab', 'ai lab', 'ஆய்வகம்', 'प्रयोगशाला'] },
+            { name: 'Dr. T. Krishnaswamy Auditorium', aliases: ['auditorium', 'krishnaswamy auditorium', 'main auditorium', 'அரங்கம்', 'सभागार'] },
+            { name: 'Wheelchair Accessible Ramp and Elevator', aliases: ['wheelchair ramp', 'accessible ramp', 'elevator', 'lift'] }
+        ];
+
+        const normalizeSpeech = (value) => value
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/[^\p{L}\p{N}\s]/gu, ' ')
+            .replace(/\s+/g, ' ')
+            .trim();
+
+        const findCampusDestination = (command) => {
+            const normalized = normalizeSpeech(command);
+            return campusDestinations
+                .flatMap((destination) => destination.aliases.map((alias) => ({
+                    destination,
+                    alias: normalizeSpeech(alias)
+                })))
+                .filter((match) => normalized.includes(match.alias))
+                .sort((first, second) => second.alias.length - first.alias.length)[0]?.destination;
+        };
+
+        const speakNavigationStatus = (message) => {
+            if (!('speechSynthesis' in window)) return;
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(message);
+            utterance.lang = recognition.lang;
+            utterance.rate = 0.95;
+            window.speechSynthesis.speak(utterance);
+        };
+
+        const openCampusDirections = (destination) => {
+            const destinationQuery = encodeURIComponent(`${destination.name}, ${campusAddress}`);
+            const openMaps = (origin) => {
+                const originQuery = origin ? `&origin=${encodeURIComponent(`${origin.latitude},${origin.longitude}`)}` : '';
+                const mapsUrl = `https://www.google.com/maps/dir/?api=1${originQuery}&destination=${destinationQuery}&travelmode=walking&dir_action=navigate&region=in&hl=en`;
+                speechStatus.innerText = `Opening walking directions to ${destination.name}...`;
+                speakNavigationStatus(`Starting walking directions to ${destination.name}`);
+                window.location.assign(mapsUrl);
+            };
+
+            if (!navigator.geolocation) {
+                openMaps(null);
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => openMaps(position.coords),
+                () => openMaps(null),
+                { enableHighAccuracy: true, timeout: 8000, maximumAge: 30000 }
+            );
+        };
+
         recognition.onresult = (e) => {
+            const cmd = e.results[0][0].transcript;
+            const destination = findCampusDestination(cmd);
+            speechStatus.innerText = 'You said: "' + cmd + '"';
 
-            const cmd =
-                e.results[0][0]
-                .transcript
-                .toLowerCase();
-
-            speechStatus.innerText =
-                'You said: "' + cmd + '"';
-
-
-            if (cmd.includes('bus')) {
+            if (destination) {
+                openCampusDirections(destination);
+            } else if (normalizeSpeech(cmd).includes('bus')) {
 
                 window.location.href = '/bus';
 
-            }
-
-            else if (
-                cmd.includes('outpass') ||
-                cmd.includes('out pass')
-            ) {
+            } else if (normalizeSpeech(cmd).includes('outpass') || normalizeSpeech(cmd).includes('out pass')) {
 
                 window.location.href = '/outpass';
 
-            }
-
-            else if (
-                cmd.includes('food') ||
-                cmd.includes('canteen')
-            ) {
+            } else if (normalizeSpeech(cmd).includes('food')) {
 
                 window.location.href = '/food';
 
-            }
-
-            else if (
-                cmd.includes('announcement') ||
-                cmd.includes('update')
-            ) {
+            } else if (normalizeSpeech(cmd).includes('announcement') || normalizeSpeech(cmd).includes('update')) {
 
                 window.location.href = '/announce';
 
-            }
-
-            else if (
-                cmd.includes('notes') ||
-                cmd.includes('study')
-            ) {
+            } else if (normalizeSpeech(cmd).includes('notes') || normalizeSpeech(cmd).includes('study')) {
 
                 window.location.href = '/ai-notes';
 
-            }
-
-            else if (
-                cmd.includes('market')
-            ) {
+            } else if (normalizeSpeech(cmd).includes('market')) {
 
                 window.location.href = '/marketplace';
 
-            }
-
-            else if (
-                cmd.includes('sos') ||
-                cmd.includes('emergency')
-            ) {
+            } else if (normalizeSpeech(cmd).includes('sos') || normalizeSpeech(cmd).includes('emergency')) {
 
                 window.location.href = '/sos';
 
-            }
-
-            else if (
-                cmd.includes('wheelchair') ||
-                cmd.includes('accessible')
-            ) {
+            } else if (normalizeSpeech(cmd).includes('wheelchair') || normalizeSpeech(cmd).includes('accessible')) {
 
                 window.location.href = '/wheelchair';
 
-            }
-
-            else if (
-                cmd.includes('visual') ||
-                cmd.includes('navigation') ||
-                cmd.includes('navigate')
-            ) {
+            } else if (normalizeSpeech(cmd).includes('visual') || normalizeSpeech(cmd).includes('navigation') || normalizeSpeech(cmd).includes('navigate')) {
 
                 window.location.href = '/virtual';
 
