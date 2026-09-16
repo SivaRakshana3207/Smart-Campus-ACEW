@@ -389,7 +389,7 @@ def academic_chat():
         }],
         "generationConfig": {
             "temperature": 0.4,
-            "maxOutputTokens": int(os.environ.get("GEMINI_CHAT_MAX_TOKENS", "2000"))
+            "maxOutputTokens": int(os.environ.get("GEMINI_CHAT_MAX_TOKENS", "8192"))
         }
     }).encode("utf-8")
 
@@ -403,7 +403,7 @@ def academic_chat():
     )
 
     try:
-        with urllib.request.urlopen(req, timeout=30) as response:
+        with urllib.request.urlopen(req, timeout=90) as response:
             result = json.loads(response.read().decode("utf-8"))
 
         candidates = result.get("candidates") or []
