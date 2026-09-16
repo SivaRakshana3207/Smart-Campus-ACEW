@@ -6,8 +6,9 @@ import json
 import os
 
 app = Flask(__name__)
-app.secret_key = 'acew_secret_key_hackathon_2026'
-DB_FILE = 'database.db'
+app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'acew_secret_key_hackathon_2026')
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_FILE = '/tmp/acew.db' if os.environ.get('VERCEL') else os.path.join(BASE_DIR, 'database.db')
 
 # --- Database Initialization ---
 def init_db():
