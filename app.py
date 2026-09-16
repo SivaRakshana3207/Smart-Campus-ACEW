@@ -85,6 +85,10 @@ def get_db_connection():
 def home():
     return render_template('index.html')
 
+@app.route('/service-worker.js')
+def service_worker():
+    return app.send_static_file('service-worker.js')
+
 @app.route('/admin')
 def admin_page():
     if not session.get('is_admin'):
