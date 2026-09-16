@@ -1,4 +1,4 @@
-const CACHE_NAME = 'acew-campus-v1';
+const CACHE_NAME = 'acew-campus-v3';
 const APP_SHELL = ['/', '/static/manifest.json', '/static/icon.svg'];
 
 self.addEventListener('install', (event) => {

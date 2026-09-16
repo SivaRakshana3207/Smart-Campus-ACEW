@@ -299,12 +299,16 @@
         .ai-actions { display: flex; gap: 7px; margin-top: 12px; }
         .ai-action { border: 1px solid rgba(255,255,255,.28); border-radius: 9px; padding: 8px 11px; color: white; background: rgba(255,255,255,.12); font-size: 10px; font-weight: 800; }
         .ai-action.active, .ai-action:hover { color: var(--primary-dark); background: white; }
-        .ai-output { display: none; max-height: 360px; overflow-y: auto; margin-top: 12px; padding: 12px; border-radius: 10px; color: var(--text); background: white; font-size: 10px; line-height: 1.6; }
+        .ai-output { display: none; max-height: 520px; overflow-y: auto; margin-top: 12px; padding: 12px; border-radius: 10px; color: var(--text); background: white; font-size: 10px; line-height: 1.6; }
         .ai-output.visible { display: block; }
-        .ai-message { margin-bottom: 9px; padding: 9px 10px; border-radius: 10px; white-space: pre-wrap; }
+        .ai-message { margin-bottom: 9px; padding: 9px 10px; border-radius: 10px; white-space: normal; }
         .ai-message.user { margin-left: 12%; color: white; background: var(--primary); }
         .ai-message.assistant { margin-right: 8%; background: #f1f6f3; }
         .ai-message strong { display: block; margin-bottom: 3px; font-size: 9px; }
+        .ai-message-content { display: block; white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; }
+        .ai-message-tools { display: flex; gap: 6px; margin-top: 9px; }
+        .ai-message-tools button { border: 1px solid #d4e1dc; border-radius: 7px; padding: 4px 8px; color: var(--primary-dark); background: white; font-size: 9px; font-weight: 700; }
+        .ai-message-content br { display: block; content: ''; margin-top: .55em; }
         .ai-chat-row { display: flex; gap: 8px; margin-top: 10px; }
         .ai-question { min-width: 0; flex: 1; border: 0; border-radius: 9px; padding: 10px; color: var(--text); background: white; font-size: 10px; }
         .ai-send { border: 0; border-radius: 9px; padding: 0 14px; color: var(--primary-dark); background: #f2a65a; font-size: 10px; font-weight: 800; }
@@ -1067,10 +1071,10 @@
     </section>
 
     <section id="learning" class="command-card ai-panel" style="margin-bottom:14px">
-        <div class="card-heading"><div><div class="section-kicker">AI-powered learning hub</div><h2>Learn smarter with Groq AI</h2><p>Choose a topic and generate an explanation, exam notes, or practice questions.</p></div><i class="fa-solid fa-wand-magic-sparkles" style="font-size:22px;color:#f2a65a"></i></div>
-        <div class="ai-controls"><div><label for="learn-subject">Subject name</label><select id="learn-subject"><option>AI & Neural Networks</option><option>Database Management Systems</option><option>Computer Networks</option><option>Data Structures</option></select></div><div><label for="learn-unit">Unit number</label><select id="learn-unit"><option>Unit 1</option><option>Unit 2</option><option>Unit 3</option><option>Unit 4</option></select></div><div><label for="learn-topic">Specific topic</label><select id="learn-topic"><option>Backpropagation and gradient descent</option><option>SQL normalisation</option><option>TCP congestion control</option><option>Graph traversal algorithms</option></select></div></div>
+        <div class="card-heading"><div><div class="section-kicker">Academic learning hub</div><h2>Academic Bot</h2><p>Select a subject, unit, and syllabus topic, then choose Learn, Notes, or Practice.</p></div><i class="fa-solid fa-graduation-cap" style="font-size:22px;color:#f2a65a"></i></div>
+        <div class="ai-controls"><div><label for="learn-subject">Subject</label><select id="learn-subject"><option>AI & Neural Networks</option><option>Database Management Systems</option><option>Computer Networks</option><option>Data Structures</option></select></div><div><label for="learn-unit">Unit</label><select id="learn-unit"><option>Unit 1</option><option>Unit 2</option><option>Unit 3</option><option>Unit 4</option></select></div><div><label for="learn-syllabus">Syllabus topic</label><select id="learn-syllabus"><option>Backpropagation and gradient descent</option><option>SQL normalisation</option><option>TCP congestion control</option><option>Graph traversal algorithms</option></select></div></div>
         <div class="ai-actions"><button class="ai-action active" type="button" data-ai-action="Learn"><i class="fa-solid fa-lightbulb me-1"></i>Learn</button><button class="ai-action" type="button" data-ai-action="Notes"><i class="fa-solid fa-note-sticky me-1"></i>Notes</button><button class="ai-action" type="button" data-ai-action="Practice"><i class="fa-solid fa-circle-question me-1"></i>Practice</button></div>
-        <div id="ai-dashboard-output" class="ai-output visible" aria-live="polite"><div class="ai-message assistant"><strong>ACEW AI TUTOR</strong>Ask me anything about your subjects, code, assignments, projects, interviews, internships, or career preparation.</div></div>
+        <div id="ai-dashboard-output" class="ai-output visible" aria-live="polite"><div class="ai-message assistant"><strong>ACADEMIC BOT</strong>Select your syllabus topic and choose Learn, Notes, or Practice.</div></div>
         <form id="ai-chat-form" class="ai-chat-row"><input id="ai-question" class="ai-question" type="text" maxlength="4000" placeholder="Ask anything... e.g. Explain backpropagation simply" autocomplete="off"><button class="ai-send" type="submit"><i class="fa-solid fa-paper-plane me-1"></i>Ask</button></form>
     </section>
 
@@ -1577,19 +1581,72 @@
     const aiSend = aiChatForm.querySelector('.ai-send');
     const aiHistory = [];
 
+    const plainAcademicText = (content) => String(content)
+        .replace(/```(?:[a-zA-Z]+)?\s*/g, '')
+        .replace(/```/g, '')
+        .replace(/^\s{0,3}#{1,6}\s*/gm, '')
+        .replace(/\*\*(.*?)\*\*/g, '$1')
+        .replace(/__(.*?)__/g, '$1')
+        .replace(/^\s*[*+]\s+/gm, '')
+        .replace(/^\s*[-]\s+/gm, '')
+        .replace(/`([^`]+)`/g, '$1')
+        .replace(/\$([^$]+)\$/g, '$1')
+        .replace(/^\s*>\s?/gm, '')
+        .replace(/[ \t]+\n/g, '\n')
+        .trim();
+
+    const downloadAcademicAnswer = (content) => {
+        const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'academic-bot-answer.txt';
+        link.click();
+        URL.revokeObjectURL(link.href);
+    };
+
+    const shareAcademicAnswer = async (content) => {
+        if (navigator.share) {
+            await navigator.share({ title: 'Academic Bot Answer', text: content });
+        } else {
+            await navigator.clipboard.writeText(content);
+            alert('Answer copied to clipboard.');
+        }
+    };
+
     const addAIMessage = (role, content) => {
         const message = document.createElement('div');
         message.className = `ai-message ${role}`;
-        const label = role === 'user' ? 'YOU' : 'ACEW AI TUTOR';
+        const label = role === 'user' ? 'YOU' : 'ACADEMIC BOT';
         message.innerHTML = `<strong>${label}</strong>`;
-        message.appendChild(document.createTextNode(content));
+        const cleanContent = role === 'assistant' ? plainAcademicText(content) : content;
+        const contentNode = document.createElement('span');
+        contentNode.className = 'ai-message-content';
+        cleanContent.split(/\r?\n/).forEach((line, index) => {
+            contentNode.appendChild(document.createTextNode(line));
+            if (index < cleanContent.split(/\r?\n/).length - 1) contentNode.appendChild(document.createElement('br'));
+        });
+        message.appendChild(contentNode);
+        if (role === 'assistant') {
+            const tools = document.createElement('div');
+            tools.className = 'ai-message-tools';
+            const shareButton = document.createElement('button');
+            shareButton.type = 'button';
+            shareButton.innerHTML = '<i class="fa-solid fa-share-nodes me-1"></i>Share';
+            shareButton.addEventListener('click', () => shareAcademicAnswer(cleanContent).catch(() => {}));
+            const downloadButton = document.createElement('button');
+            downloadButton.type = 'button';
+            downloadButton.innerHTML = '<i class="fa-solid fa-download me-1"></i>Download';
+            downloadButton.addEventListener('click', () => downloadAcademicAnswer(cleanContent));
+            tools.append(shareButton, downloadButton);
+            message.appendChild(tools);
+        }
         aiOutput.appendChild(message);
         aiOutput.classList.add('visible');
         aiOutput.scrollTop = aiOutput.scrollHeight;
     };
 
-    const askGroq = async (question) => {
-        const response = await fetch('/api/groq-chat', {
+    const askAcademicBot = async (question) => {
+        const response = await fetch('/api/academic-chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
             credentials: 'same-origin',
@@ -1599,7 +1656,7 @@
                 context: {
                     subject: document.getElementById('learn-subject').value,
                     unit: document.getElementById('learn-unit').value,
-                    topic: document.getElementById('learn-topic').value
+                    topic: document.getElementById('learn-syllabus').value
                 }
             })
         });
@@ -1619,7 +1676,7 @@
         aiSend.disabled = true;
         aiSend.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
         try {
-            const answer = await askGroq(question);
+            const answer = await askAcademicBot(question);
             addAIMessage('assistant', answer);
             aiHistory.push({ role: 'assistant', content: answer });
         } catch (error) {
@@ -1641,7 +1698,7 @@
             const action = button.dataset.aiAction;
             const subject = document.getElementById('learn-subject').value;
             const unit = document.getElementById('learn-unit').value;
-            const topic = document.getElementById('learn-topic').value;
+            const topic = document.getElementById('learn-syllabus').value;
             const prompts = {
                 Learn: `Teach me ${topic} from ${subject}, ${unit}, step by step. Use a simple analogy, a practical example, and explain common mistakes.`,
                 Notes: `Create semester-exam-ready notes for ${topic} from ${subject}, ${unit}. Include definitions, key points, a diagram description, and important questions.`,

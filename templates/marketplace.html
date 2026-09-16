@@ -6,7 +6,21 @@
     <title>Campus Marketplace - ACEW</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>:root { --acew-maroon: #6b1d5c; } .bg-acew { background-color: var(--acew-maroon); } .bottom-nav { display: none; } @media (max-width: 768px) { body { padding-bottom: 82px; } .bottom-nav { display: flex; position: fixed; z-index: 1000; bottom: 0; left: 0; right: 0; height: 70px; background: rgba(255,255,255,.94); backdrop-filter: blur(18px); border-top: 1px solid #eeeaf0; align-items: center; justify-content: space-around; padding: 5px 10px; } .bottom-item { flex: 1; height: 58px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #8d8790; font-size: 9px; font-weight: 700; text-decoration: none; } .bottom-item i { font-size: 17px; } .bottom-item.active { color: var(--acew-maroon); } .bottom-sos { width: 48px; height: 48px; margin-top: -22px; border-radius: 50%; background: #e53935; color: white; display: flex; align-items: center; justify-content: center; border: 5px solid #f7f7fa; box-shadow: 0 7px 20px rgba(229,57,53,.3); font-size: 17px; } }</style>
+    <style>
+        :root { --acew-maroon: #6b1d5c; --ink: #263238; --soft: #f7f4f8; --accent: #f2a65a; }
+        body { color: var(--ink); }
+        .bg-acew { background-color: var(--acew-maroon); }
+        .market-card { border: 0; border-radius: 16px; overflow: hidden; transition: transform .2s, box-shadow .2s; }
+        .market-card:hover { transform: translateY(-3px); box-shadow: 0 .75rem 1.5rem rgba(45, 25, 50, .12) !important; }
+        .product-image { width: 100%; height: 170px; object-fit: cover; background: linear-gradient(135deg, #eadfea, #f8eee3); }
+        .product-placeholder { height: 170px; display: grid; place-items: center; color: var(--acew-maroon); font-size: 42px; background: linear-gradient(135deg, #eadfea, #f8eee3); }
+        .price { color: #b43742; font-size: 1.15rem; font-weight: 800; }
+        .cart-drawer { width: min(420px, 100vw); }
+        .cart-item-image { width: 58px; height: 58px; object-fit: cover; border-radius: 10px; background: var(--soft); }
+        .quantity-control { width: 108px; }
+        .bottom-nav { display: none; }
+        @media (max-width: 768px) { body { padding-bottom: 82px; } .product-image, .product-placeholder { height: 145px; } .bottom-nav { display: flex; position: fixed; z-index: 1000; bottom: 0; left: 0; right: 0; height: 70px; background: rgba(255,255,255,.94); backdrop-filter: blur(18px); border-top: 1px solid #eeeaf0; align-items: center; justify-content: space-around; padding: 5px 10px; } .bottom-item { flex: 1; height: 58px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #8d8790; font-size: 9px; font-weight: 700; text-decoration: none; } .bottom-item i { font-size: 17px; } .bottom-item.active { color: var(--acew-maroon); } .bottom-sos { width: 48px; height: 48px; margin-top: -22px; border-radius: 50%; background: #e53935; color: white; display: flex; align-items: center; justify-content: center; border: 5px solid #f7f7fa; box-shadow: 0 7px 20px rgba(229,57,53,.3); font-size: 17px; } }
+    </style>
     <link rel="manifest" href="/static/manifest.json">
     <meta name="theme-color" content="#6b1d5c">
     <meta name="mobile-web-app-capable" content="yes">
@@ -22,16 +36,34 @@
 
     <div class="container">
         <!-- Post New Listing Button / Modal Trigger -->
-        <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-3 gap-2">
             <h5 class="fw-bold text-acew m-0"><i class="fa-solid fa-boxes-packing me-2"></i>Books, Drafters & Components</h5>
-            <button class="btn btn-success fw-bold btn-sm" data-bs-toggle="modal" data-bs-target="#postItemModal">
-                <i class="fa-solid fa-plus me-1"></i> Post Item
-            </button>
+            <div class="d-flex gap-2 flex-shrink-0">
+                <button class="btn btn-outline-dark fw-bold btn-sm" data-bs-toggle="offcanvas" data-bs-target="#cartDrawer" title="Open cart">
+                    <i class="fa-solid fa-cart-shopping"></i> <span class="d-none d-sm-inline">Cart</span> <span id="cart-count" class="badge text-bg-danger">0</span>
+                </button>
+                <button class="btn btn-success fw-bold btn-sm" data-bs-toggle="modal" data-bs-target="#postItemModal"><i class="fa-solid fa-plus me-1"></i> Post Item</button>
+            </div>
         </div>
 
         <!-- Items Listing Grid -->
         <div class="row g-3" id="marketplace-grid">
             <!-- Dynamically Loaded -->
+        </div>
+    </div>
+
+    <div class="offcanvas offcanvas-end cart-drawer" tabindex="-1" id="cartDrawer">
+        <div class="offcanvas-header border-bottom">
+            <h5 class="offcanvas-title fw-bold"><i class="fa-solid fa-cart-shopping me-2"></i>Your cart</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body d-flex flex-column">
+            <div id="cart-items" class="flex-grow-1"></div>
+            <div class="border-top pt-3 mt-3">
+                <div class="d-flex justify-content-between fw-bold mb-3"><span>Total</span><span id="cart-total">₹0</span></div>
+                <button id="checkout-btn" class="btn btn-success w-100 fw-bold"><i class="fa-solid fa-bag-shopping me-1"></i> Buy selected items</button>
+                <button id="clear-cart-btn" class="btn btn-link text-danger w-100 btn-sm">Clear cart</button>
+            </div>
         </div>
     </div>
 
@@ -69,6 +101,10 @@
                             <label class="form-label fw-bold">Price / Terms</label>
                             <input type="text" id="item_price" class="form-control" required placeholder="e.g. ₹200 or Free for 1 week">
                         </div>
+                        <div class="mb-2">
+                            <label class="form-label fw-bold">Image URL <span class="text-muted fw-normal">(optional)</span></label>
+                            <input type="url" id="item_image" class="form-control" placeholder="https://example.com/item-photo.jpg">
+                        </div>
                         <div class="mb-3">
                             <label class="form-label fw-bold">Your Name & Hostel Block / Dept</label>
                             <input type="text" id="item_seller" class="form-control" required placeholder="e.g. S. Meena (3rd Year CSE, Hostel A)">
@@ -82,6 +118,46 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        let cart = JSON.parse(localStorage.getItem('acewMarketplaceCart') || '[]');
+
+        function escapeHtml(value) {
+            return String(value ?? '').replace(/[&<>'"]/g, (char) => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
+        }
+
+        function priceNumber(value) {
+            const match = String(value || '').replace(/,/g, '').match(/\d+(?:\.\d+)?/);
+            return match ? Number(match[0]) : 0;
+        }
+
+        function saveCart() { localStorage.setItem('acewMarketplaceCart', JSON.stringify(cart)); renderCart(); }
+
+        function addToCart(item) {
+            if (item.item_type !== 'Sell') { alert('This listing is for lending or sharing. Use Contact seller instead.'); return; }
+            const existing = cart.find(entry => entry.id === item.id);
+            if (existing) existing.quantity += 1;
+            else cart.push({ ...item, quantity: 1 });
+            saveCart();
+        }
+
+        function renderCart() {
+            const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById('cart-count').textContent = count;
+            const total = cart.reduce((sum, item) => sum + priceNumber(item.price) * item.quantity, 0);
+            document.getElementById('cart-total').textContent = `₹${total.toLocaleString('en-IN')}`;
+            const container = document.getElementById('cart-items');
+            if (!cart.length) { container.innerHTML = '<div class="text-center text-muted py-5"><i class="fa-solid fa-cart-shopping fa-2x mb-2"></i><p>Your cart is empty.</p></div>'; return; }
+            container.innerHTML = cart.map(item => `
+                <div class="d-flex gap-2 align-items-center border-bottom py-3">
+                    ${item.image_url ? `<img class="cart-item-image" src="${escapeHtml(item.image_url)}" alt="${escapeHtml(item.title)}">` : '<div class="cart-item-image d-grid place-items-center text-center"><i class="fa-solid fa-box"></i></div>'}
+                    <div class="flex-grow-1 min-width-0"><div class="fw-bold text-truncate">${escapeHtml(item.title)}</div><div class="small text-muted">${escapeHtml(item.price)}</div>
+                    <div class="input-group input-group-sm quantity-control mt-2"><button class="btn btn-outline-secondary" onclick="changeQuantity(${item.id}, -1)">−</button><span class="form-control text-center">${item.quantity}</span><button class="btn btn-outline-secondary" onclick="changeQuantity(${item.id}, 1)">+</button></div></div>
+                    <button class="btn btn-sm btn-link text-danger" onclick="removeFromCart(${item.id})" title="Remove"><i class="fa-solid fa-trash"></i></button>
+                </div>`).join('');
+        }
+
+        function changeQuantity(id, amount) { const item = cart.find(entry => entry.id === id); if (item) item.quantity += amount; cart = cart.filter(item => item.quantity > 0); saveCart(); }
+        function removeFromCart(id) { cart = cart.filter(item => item.id !== id); saveCart(); }
+
         // Fetch and display listed marketplace items
         async function loadMarketplace() {
             const res = await fetch('/api/marketplace/list');
@@ -89,22 +165,18 @@
             const grid = document.getElementById('marketplace-grid');
 
             grid.innerHTML = data.data.map(item => `
-                <div class="col-12 col-md-6">
-                    <div class="card p-3 shadow-sm border-0 h-100">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <h6 class="fw-bold text-dark mb-0">${item.title}</h6>
-                            <span class="badge ${item.type === 'Sell' ? 'bg-success' : 'bg-info text-dark'}">${item.type}</span>
-                        </div>
-                        <p class="text-muted small mb-2"><i class="fa-solid fa-tag me-1"></i> ${item.category}</p>
-                        <div class="p-2 bg-light rounded mb-2">
-                            <strong class="text-danger">${item.price}</strong>
-                        </div>
-                        <div class="small text-muted">
-                            <i class="fa-solid fa-user me-1"></i> ${item.seller}
+                <div class="col-12 col-sm-6 col-lg-4">
+                    <div class="card market-card shadow-sm h-100">
+                        ${item.image_url ? `<img class="product-image" src="${escapeHtml(item.image_url)}" alt="${escapeHtml(item.title)}" loading="lazy">` : '<div class="product-placeholder"><i class="fa-solid fa-box-open"></i></div>'}
+                        <div class="card-body d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-start gap-2"><h6 class="fw-bold text-dark mb-1">${escapeHtml(item.title)}</h6><span class="badge ${item.item_type === 'Sell' ? 'bg-success' : 'bg-info text-dark'}">${escapeHtml(item.item_type)}</span></div>
+                            <p class="text-muted small mb-2"><i class="fa-solid fa-tag me-1"></i>${escapeHtml(item.category)}</p>
+                            <div class="price mb-1">${escapeHtml(item.price)}</div>
+                            <div class="small text-muted mb-3"><i class="fa-solid fa-user me-1"></i>${escapeHtml(item.seller)}</div>
+                            <div class="mt-auto d-flex gap-2"><button class="btn btn-success btn-sm flex-grow-1" onclick='addToCart(${JSON.stringify(item).replace(/'/g, "&#39;")})' ${item.item_type !== 'Sell' ? 'disabled' : ''}><i class="fa-solid fa-cart-plus me-1"></i>${item.item_type === 'Sell' ? 'Add to cart' : 'Lend only'}</button><button class="btn btn-outline-secondary btn-sm" onclick="alert('Contact ${escapeHtml(item.seller)} to arrange this listing.')" title="Contact seller"><i class="fa-solid fa-message"></i></button></div>
                         </div>
                     </div>
-                </div>
-            `).join('');
+                </div>`).join('') || '<div class="col-12"><div class="alert alert-light text-center">No listings yet. Post the first item.</div></div>';
         }
 
         // Form Submit Handler
@@ -113,9 +185,10 @@
             const body = {
                 title: document.getElementById('item_title').value,
                 category: document.getElementById('item_cat').value,
-                type: document.getElementById('item_type').value,
+                item_type: document.getElementById('item_type').value,
                 price: document.getElementById('item_price').value,
-                seller: document.getElementById('item_seller').value
+                seller: document.getElementById('item_seller').value,
+                image_url: document.getElementById('item_image').value.trim()
             };
 
             const res = await fetch('/api/marketplace/add', {
@@ -129,6 +202,9 @@
             loadMarketplace();
         });
 
+        document.getElementById('checkout-btn').addEventListener('click', () => { if (!cart.length) return alert('Your cart is empty.'); alert('Order request created. Contact the seller to complete payment and pickup.'); cart = []; saveCart(); });
+        document.getElementById('clear-cart-btn').addEventListener('click', () => { cart = []; saveCart(); });
+        renderCart();
         loadMarketplace();
     </script>
     <nav class="bottom-nav"><a href="/" class="bottom-item"><i class="fa-solid fa-house"></i>Home</a><a href="/announce" class="bottom-item"><i class="fa-solid fa-bullhorn"></i>Updates</a><a href="/sos" class="bottom-item"><span class="bottom-sos"><i class="fa-solid fa-shield-halved"></i></span>SOS</a><a href="/virtual" class="bottom-item"><i class="fa-solid fa-location-arrow"></i>Navigate</a><a href="/ai-notes" class="bottom-item"><i class="fa-solid fa-brain"></i>AI</a></nav>

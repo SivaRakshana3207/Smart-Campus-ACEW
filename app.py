@@ -67,8 +67,12 @@ def init_db():
                     category TEXT,
                     item_type TEXT,
                     price TEXT,
-                    seller TEXT
+                    seller TEXT,
+                    image_url TEXT
                 )''')
+    columns = [row[1] for row in c.execute("PRAGMA table_info(marketplace)").fetchall()]
+    if 'image_url' not in columns:
+        c.execute("ALTER TABLE marketplace ADD COLUMN image_url TEXT")
 
     # Seed Default Announcement if empty
     c.execute("SELECT COUNT(*) FROM announcements")
@@ -299,15 +303,16 @@ def get_marketplace():
 def add_marketplace():
     data = request.get_json(silent=True) or {}
     conn = get_db_connection()
-    conn.execute("INSERT INTO marketplace (title, category, item_type, price, seller) VALUES (?, ?, ?, ?, ?)",
-                 (data['title'], data['category'], data['item_type'], data['price'], data['seller']))
+    item_type = data.get('item_type') or data.get('type') or 'Sell'
+    conn.execute("INSERT INTO marketplace (title, category, item_type, price, seller, image_url) VALUES (?, ?, ?, ?, ?, ?)",
+                 (data['title'], data['category'], item_type, data['price'], data['seller'], data.get('image_url', '')))
     conn.commit()
     conn.close()
     return jsonify({"status": "success", "message": "Listing published!"})
 
-# --- OpenAI AI Chatbot ---
-@app.route('/api/groq-chat', methods=['POST'])
-def groq_chat():
+# --- Academic Bot powered by Gemini ---
+@app.route('/api/academic-chat', methods=['POST'])
+def academic_chat():
     # User must be logged in.
     if not session.get('is_student') and not session.get('is_admin') and not session.get('is_guest'):
         return jsonify({
@@ -330,14 +335,14 @@ def groq_chat():
             "message": "Please keep your question under 4000 characters."
         }), 400
 
-    api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("OPENAI_API_KEY") or os.environ.get("GROQ_API_KEY")
+    api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
         return jsonify({
             "status": "error",
             "message": "GEMINI_API_KEY is not configured. Add it to your .env file."
         }), 503
 
-    model_name = os.environ.get("GEMINI_MODEL") or os.environ.get("OPENAI_MODEL") or os.environ.get("GROQ_MODEL", "gemini-3.6-flash")
+    model_name = os.environ.get("GEMINI_MODEL", "gemini-3.6-flash")
 
     context = data.get('context')
     if not isinstance(context, dict):
@@ -384,7 +389,7 @@ def groq_chat():
         }],
         "generationConfig": {
             "temperature": 0.4,
-            "maxOutputTokens": 600
+            "maxOutputTokens": int(os.environ.get("GEMINI_CHAT_MAX_TOKENS", "8192"))
         }
     }).encode("utf-8")
 
@@ -398,7 +403,7 @@ def groq_chat():
     )
 
     try:
-        with urllib.request.urlopen(req, timeout=30) as response:
+        with urllib.request.urlopen(req, timeout=90) as response:
             result = json.loads(response.read().decode("utf-8"))
 
         candidates = result.get("candidates") or []
@@ -449,13 +454,13 @@ def groq_chat():
         }), 500
 
 
-@app.route('/api/groq-generate', methods=['POST'])
-def groq_generate():
+@app.route('/api/academic-notes', methods=['POST'])
+def academic_notes():
     data = request.get_json(silent=True) or {}
 
     # Prefer the server-side key. Accepting a client key is retained for compatibility
     # with the existing frontend, but server-side .env is recommended.
-    api_key = os.environ.get('GEMINI_API_KEY') or os.environ.get('OPENAI_API_KEY') or os.environ.get('GROQ_API_KEY') or data.get('api_key')
+    api_key = os.environ.get('GEMINI_API_KEY') or data.get('api_key')
 
     if not api_key:
         return jsonify({
@@ -471,7 +476,7 @@ def groq_generate():
         "Include key concepts, simple explanations, examples, and bullet points."
     )
 
-    model_name = os.environ.get('GEMINI_MODEL') or os.environ.get('OPENAI_MODEL') or os.environ.get('GROQ_MODEL', 'gemini-3.6-flash')
+    model_name = os.environ.get('GEMINI_MODEL', 'gemini-3.6-flash')
 
     gemini_url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={api_key}"
     gemini_payload = json.dumps({
@@ -552,7 +557,7 @@ def health():
     return jsonify({
         "status": "success",
         "message": "ACEW Student Hub backend is running.",
-        "gemini_configured": bool(os.environ.get("GEMINI_API_KEY") or os.environ.get("OPENAI_API_KEY") or os.environ.get("GROQ_API_KEY"))
+        "gemini_configured": bool(os.environ.get("GEMINI_API_KEY"))
     })
 
 
