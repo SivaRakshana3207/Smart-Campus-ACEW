@@ -308,6 +308,7 @@
         .ai-message-content { display: block; white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; }
         .ai-message-tools { display: flex; gap: 6px; margin-top: 9px; }
         .ai-message-tools button { border: 1px solid #d4e1dc; border-radius: 7px; padding: 4px 8px; color: var(--primary-dark); background: white; font-size: 9px; font-weight: 700; }
+        .ai-message-content br { display: block; content: ''; margin-top: .55em; }
         .ai-chat-row { display: flex; gap: 8px; margin-top: 10px; }
         .ai-question { min-width: 0; flex: 1; border: 0; border-radius: 9px; padding: 10px; color: var(--text); background: white; font-size: 10px; }
         .ai-send { border: 0; border-radius: 9px; padding: 0 14px; color: var(--primary-dark); background: #f2a65a; font-size: 10px; font-weight: 800; }
@@ -1620,7 +1621,10 @@
         const cleanContent = role === 'assistant' ? plainAcademicText(content) : content;
         const contentNode = document.createElement('span');
         contentNode.className = 'ai-message-content';
-        contentNode.textContent = cleanContent;
+        cleanContent.split(/\r?\n/).forEach((line, index) => {
+            contentNode.appendChild(document.createTextNode(line));
+            if (index < cleanContent.split(/\r?\n/).length - 1) contentNode.appendChild(document.createElement('br'));
+        });
         message.appendChild(contentNode);
         if (role === 'assistant') {
             const tools = document.createElement('div');
