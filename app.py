@@ -83,7 +83,15 @@ def get_db_connection():
 
 @app.route('/')
 def home():
+    if not session.get('is_student') and not session.get('is_admin'):
+        return redirect(url_for('login_page'))
     return render_template('index.html')
+
+@app.route('/login')
+def login_page():
+    if session.get('is_student') or session.get('is_admin'):
+        return redirect(url_for('home'))
+    return render_template('login.html')
 
 @app.route('/service-worker.js')
 def service_worker():
@@ -142,9 +150,16 @@ def login():
         return jsonify({"status": "success", "message": "Admin login successful!"})
     return jsonify({"status": "error", "message": "Invalid Credentials!"}), 401
 
+@app.route('/api/student-login', methods=['POST'])
+def student_login():
+    session['is_student'] = True
+    session.pop('is_admin', None)
+    return jsonify({"status": "success", "message": "Student login successful!"})
+
 @app.route('/api/logout', methods=['GET'])
 def logout():
     session.pop('is_admin', None)
+    session.pop('is_student', None)
     return jsonify({"status": "success", "message": "Logged out!"})
 
 # --- Announcements DB APIs ---
