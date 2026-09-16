@@ -9,7 +9,7 @@
     <!-- TensorFlow.js & COCO-SSD Model -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
-    <style>:root { --acew-maroon: #6b1d5c; } .bg-acew { background-color: var(--acew-maroon); } .bottom-nav { display: none; } @media (max-width: 768px) { body { padding-bottom: 82px; } .bottom-nav { display: flex; position: fixed; z-index: 1000; bottom: 0; left: 0; right: 0; height: 70px; background: rgba(255,255,255,.94); backdrop-filter: blur(18px); border-top: 1px solid #eeeaf0; align-items: center; justify-content: space-around; padding: 5px 10px; } .bottom-item { flex: 1; height: 58px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #8d8790; font-size: 9px; font-weight: 700; text-decoration: none; } .bottom-item i { font-size: 17px; } .bottom-item.active { color: var(--acew-maroon); } .bottom-sos { width: 48px; height: 48px; margin-top: -22px; border-radius: 50%; background: #e53935; color: white; display: flex; align-items: center; justify-content: center; border: 5px solid #f7f7fa; box-shadow: 0 7px 20px rgba(229,57,53,.3); font-size: 17px; } }</style>
+    <style>:root { --acew-maroon: #6b1d5c; } .bg-acew { background-color: var(--acew-maroon); } .camera-frame { position: relative; width: min(100%, 640px); margin: 0 auto; overflow: hidden; border-radius: 12px; background: #101417; } #video { display: block; width: 100%; height: auto; min-height: 260px; object-fit: cover; } #overlay { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; } .path-guide { position: absolute; inset: 28% 30% 0; border: 2px dashed rgba(255,255,255,.8); border-bottom: 0; border-radius: 50% 50% 0 0; pointer-events: none; } .camera-controls { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; } .speech-state { font-size: .8rem; } .bottom-nav { display: none; } @media (max-width: 768px) { body { padding-bottom: 82px; } .camera-frame { border-radius: 8px; } #video { min-height: 230px; } .bottom-nav { display: flex; position: fixed; z-index: 1000; bottom: 0; left: 0; right: 0; height: 70px; background: rgba(255,255,255,.94); backdrop-filter: blur(18px); border-top: 1px solid #eeeaf0; align-items: center; justify-content: space-around; padding: 5px 10px; } .bottom-item { flex: 1; height: 58px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #8d8790; font-size: 9px; font-weight: 700; text-decoration: none; } .bottom-item i { font-size: 17px; } .bottom-item.active { color: var(--acew-maroon); } .bottom-sos { width: 48px; height: 48px; margin-top: -22px; border-radius: 50%; background: #e53935; color: white; display: flex; align-items: center; justify-content: center; border: 5px solid #f7f7fa; box-shadow: 0 7px 20px rgba(229,57,53,.3); font-size: 17px; } }</style>
     <link rel="manifest" href="/static/manifest.json">
     <meta name="theme-color" content="#6b1d5c">
     <meta name="mobile-web-app-capable" content="yes">
@@ -27,14 +27,19 @@
             <h5 class="fw-bold text-acew"><i class="fa-solid fa-camera me-2"></i>Real-Time Campus Object & Path Detection</h5>
             <p class="text-muted small">Uses device camera + TensorFlow.js to assist visually impaired students with path obstacles.</p>
             
-            <div class="position-relative d-inline-block my-2">
-                <video id="video" autoplay playsinline muted class="border rounded w-100" style="max-width: 480px; height: auto;"></video>
+            <div class="camera-frame my-2">
+                <video id="video" autoplay playsinline muted></video>
+                <canvas id="overlay"></canvas>
+                <div class="path-guide" aria-hidden="true"></div>
             </div>
 
-            <div>
-                <button class="btn btn-primary fw-bold" id="start-cam-btn"><i class="fa-solid fa-power-off me-1"></i> Start Camera & AI Scanner</button>
+            <div class="camera-controls">
+                <button class="btn btn-primary fw-bold" id="start-cam-btn"><i class="fa-solid fa-power-off me-1"></i> Start scanner</button>
+                <button class="btn btn-outline-secondary fw-bold" id="stop-cam-btn" disabled><i class="fa-solid fa-stop me-1"></i> Stop</button>
+                <button class="btn btn-outline-dark fw-bold" id="speech-btn" type="button"><i class="fa-solid fa-volume-high me-1"></i> Speech on</button>
             </div>
-            <div id="detection-result" class="mt-3 alert alert-info fw-bold">Camera status: Idle</div>
+            <div id="detection-result" class="mt-3 alert alert-info fw-bold" aria-live="polite">Camera status: Idle</div>
+            <div class="speech-state text-muted" id="speech-state">Speech guidance is enabled. Keep the phone pointed forward.</div>
         </div>
     </div>
 
@@ -42,26 +47,146 @@
         const video = document.getElementById('video');
         const startBtn = document.getElementById('start-cam-btn');
         const resultDiv = document.getElementById('detection-result');
+        const speechState = document.getElementById('speech-state');
+        const speechBtn = document.getElementById('speech-btn');
+        const stopBtn = document.getElementById('stop-cam-btn');
+        const overlay = document.getElementById('overlay');
+        const context = overlay.getContext('2d');
+        let model = null;
+        let stream = null;
+        let scanTimer = null;
+        let scanning = false;
+        let speechEnabled = true;
+        let lastSpoken = '';
+        let lastSpokenAt = 0;
+
+        const obstacleClasses = new Set(['person', 'bicycle', 'car', 'motorcycle', 'bus', 'truck', 'chair', 'bench', 'backpack', 'suitcase', 'dog']);
+
+        const speak = (message, force = false) => {
+            if (!speechEnabled || !('speechSynthesis' in window)) return;
+            const now = Date.now();
+            if (!force && message === lastSpoken && now - lastSpokenAt < 7000) return;
+            lastSpoken = message;
+            lastSpokenAt = now;
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(message);
+            utterance.lang = 'en-IN';
+            utterance.rate = 0.95;
+            window.speechSynthesis.speak(utterance);
+        };
+
+        const drawPredictions = (predictions) => {
+            const scaleX = video.videoWidth ? overlay.width / video.videoWidth : 1;
+            const scaleY = video.videoHeight ? overlay.height / video.videoHeight : 1;
+            context.clearRect(0, 0, overlay.width, overlay.height);
+            predictions.forEach((prediction) => {
+                const [x, y, width, height] = prediction.bbox;
+                const boxX = x * scaleX;
+                const boxY = y * scaleY;
+                const boxWidth = width * scaleX;
+                const boxHeight = height * scaleY;
+                context.strokeStyle = '#ffcc00';
+                context.lineWidth = 3;
+                context.strokeRect(boxX, boxY, boxWidth, boxHeight);
+                context.fillStyle = '#ffcc00';
+                context.font = 'bold 14px sans-serif';
+                context.fillText(`${prediction.class} ${Math.round(prediction.score * 100)}%`, boxX + 5, Math.max(18, boxY + 18));
+            });
+        };
+
+        const analyze = (predictions) => {
+            const width = video.videoWidth || 1;
+            const height = video.videoHeight || 1;
+            const obstacles = predictions.filter((prediction) => prediction.score >= 0.55 && obstacleClasses.has(prediction.class));
+            const pathObstacle = obstacles.find((prediction) => {
+                const [x, y, boxWidth, boxHeight] = prediction.bbox;
+                const center = (x + boxWidth / 2) / width;
+                const size = (boxWidth * boxHeight) / (width * height);
+                return center > 0.28 && center < 0.72 && y + boxHeight > height * 0.3 && size > 0.025;
+            });
+
+            if (!obstacles.length) {
+                resultDiv.className = 'mt-3 alert alert-success fw-bold';
+                resultDiv.innerText = 'Path appears clear.';
+                speak('Path appears clear.');
+                return;
+            }
+
+            const names = obstacles.map((item) => item.class).join(', ');
+            if (pathObstacle) {
+                const [x, , boxWidth] = pathObstacle.bbox;
+                const center = (x + boxWidth / 2) / width;
+                const direction = center < 0.45 ? 'slightly left' : center > 0.55 ? 'slightly right' : 'straight ahead';
+                const size = (pathObstacle.bbox[2] * pathObstacle.bbox[3]) / (width * height);
+                const urgency = size > 0.18 ? 'Stop. ' : size > 0.08 ? 'Caution. ' : '';
+                const message = `${urgency}Obstacle, ${pathObstacle.class}, ${direction}. Slow down and check your route.`;
+                resultDiv.className = `mt-3 alert ${size > 0.08 ? 'alert-danger' : 'alert-warning'} fw-bold`;
+                resultDiv.innerText = message;
+                speak(message);
+            } else {
+                const message = `Objects detected nearby: ${names}. The walking path is not clearly blocked.`;
+                resultDiv.className = 'mt-3 alert alert-warning fw-bold';
+                resultDiv.innerText = message;
+                speak(message);
+            }
+        };
+
+        const scan = async () => {
+            if (!scanning || !model || video.readyState < 2) return;
+            try {
+                const predictions = await model.detect(video, 20, 0.55);
+                drawPredictions(predictions);
+                analyze(predictions);
+            } catch (error) {
+                resultDiv.className = 'mt-3 alert alert-danger fw-bold';
+                resultDiv.innerText = `Scanner error: ${error.message}`;
+            }
+        };
 
         startBtn.addEventListener('click', async () => {
-            resultDiv.innerText = "Loading AI TensorFlow Model...";
-            const model = await cocoSsd.load();
-            
-            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-            video.srcObject = stream;
+            if (scanning) return;
+            try {
+                resultDiv.className = 'mt-3 alert alert-info fw-bold';
+                resultDiv.innerText = 'Loading obstacle detection model...';
+                model = await cocoSsd.load();
+                stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false });
+                video.srcObject = stream;
+                await video.play();
+                overlay.width = video.videoWidth;
+                overlay.height = video.videoHeight;
+                scanning = true;
+                startBtn.disabled = true;
+                stopBtn.disabled = false;
+                resultDiv.innerText = 'Scanner active. Point the camera forward.';
+                speak('Obstacle scanner active. Point the camera forward.', true);
+                scanTimer = setInterval(scan, 1200);
+                scan();
+            } catch (error) {
+                resultDiv.className = 'mt-3 alert alert-danger fw-bold';
+                resultDiv.innerText = `Camera could not start: ${error.message}. Use HTTPS and allow camera access.`;
+            }
+        });
 
-            video.onloadeddata = () => {
-                resultDiv.innerText = "AI Scanning Active! Analyzing camera frame...";
-                setInterval(async () => {
-                    const predictions = await model.detect(video);
-                    if (predictions.length > 0) {
-                        const items = predictions.map(p => `${p.class} (${Math.round(p.score * 100)}%)`).join(', ');
-                        resultDiv.innerText = `Detected Objects ahead: ${items}`;
-                    } else {
-                        resultDiv.innerText = "Path clear. No obstacle detected.";
-                    }
-                }, 2000);
-            };
+        stopBtn.addEventListener('click', () => {
+            scanning = false;
+            clearInterval(scanTimer);
+            if (stream) stream.getTracks().forEach((track) => track.stop());
+            stream = null;
+            video.srcObject = null;
+            context.clearRect(0, 0, overlay.width, overlay.height);
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+            resultDiv.className = 'mt-3 alert alert-info fw-bold';
+            resultDiv.innerText = 'Camera status: Stopped';
+            window.speechSynthesis?.cancel();
+        });
+
+        speechBtn.addEventListener('click', () => {
+            speechEnabled = !speechEnabled;
+            speechBtn.innerHTML = speechEnabled ? '<i class="fa-solid fa-volume-high me-1"></i> Speech on' : '<i class="fa-solid fa-volume-xmark me-1"></i> Speech off';
+            speechState.innerText = speechEnabled ? 'Speech guidance is enabled.' : 'Speech guidance is disabled.';
+            if (speechEnabled) speak('Speech guidance enabled.', true);
+            else window.speechSynthesis?.cancel();
         });
     </script>
     <nav class="bottom-nav"><a href="/" class="bottom-item"><i class="fa-solid fa-house"></i>Home</a><a href="/announce" class="bottom-item"><i class="fa-solid fa-bullhorn"></i>Updates</a><a href="/sos" class="bottom-item"><span class="bottom-sos"><i class="fa-solid fa-shield-halved"></i></span>SOS</a><a href="/virtual" class="bottom-item active"><i class="fa-solid fa-location-arrow"></i>Navigate</a><a href="/ai-notes" class="bottom-item"><i class="fa-solid fa-brain"></i>AI</a></nav>
