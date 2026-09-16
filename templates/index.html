@@ -301,11 +301,11 @@
         .ai-action.active, .ai-action:hover { color: var(--primary-dark); background: white; }
         .ai-output { display: none; max-height: 520px; overflow-y: auto; margin-top: 12px; padding: 12px; border-radius: 10px; color: var(--text); background: white; font-size: 10px; line-height: 1.6; }
         .ai-output.visible { display: block; }
-        .ai-message { margin-bottom: 9px; padding: 9px 10px; border-radius: 10px; white-space: pre-wrap; }
+        .ai-message { margin-bottom: 9px; padding: 9px 10px; border-radius: 10px; white-space: normal; }
         .ai-message.user { margin-left: 12%; color: white; background: var(--primary); }
         .ai-message.assistant { margin-right: 8%; background: #f1f6f3; }
         .ai-message strong { display: block; margin-bottom: 3px; font-size: 9px; }
-        .ai-message-content { display: block; }
+        .ai-message-content { display: block; white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; }
         .ai-message-tools { display: flex; gap: 6px; margin-top: 9px; }
         .ai-message-tools button { border: 1px solid #d4e1dc; border-radius: 7px; padding: 4px 8px; color: var(--primary-dark); background: white; font-size: 9px; font-weight: 700; }
         .ai-chat-row { display: flex; gap: 8px; margin-top: 10px; }
