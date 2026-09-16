@@ -205,6 +205,36 @@
         .today-item i { color: var(--accent); width: 15px; text-align: center; }
         .today-item small { display: block; color: var(--muted); font-size: 9px; margin-top: 2px; }
 
+        .student-dashboard { display: grid; grid-template-columns: 1.2fr .8fr; gap: 14px; margin-bottom: 24px; }
+        .dashboard-card { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 18px; box-shadow: 0 8px 24px rgba(24,57,55,.05); }
+        .dashboard-heading { display: flex; align-items: start; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+        .dashboard-heading h2 { margin: 3px 0 0; font-size: 16px; font-weight: 800; }
+        .dashboard-heading a { color: var(--primary); font-size: 10px; font-weight: 800; white-space: nowrap; }
+        .metric-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; }
+        .metric { padding: 12px; border-radius: 14px; background: #f5f8f6; }
+        .metric strong { display: block; color: var(--text); font-size: 20px; line-height: 1; }
+        .metric span { display: block; color: var(--muted); font-size: 9px; margin-top: 7px; }
+        .metric em { display: block; color: var(--success); font-size: 9px; font-style: normal; font-weight: 800; margin-top: 5px; }
+        .assignment-list { display: grid; gap: 10px; }
+        .assignment { display: flex; align-items: center; gap: 10px; }
+        .assignment-icon { width: 34px; height: 34px; display: grid; place-items: center; flex: 0 0 auto; border-radius: 10px; color: #a96120; background: #fff0df; }
+        .assignment-info { min-width: 0; flex: 1; }
+        .assignment-info strong { display: block; overflow: hidden; color: var(--text); font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+        .assignment-info small { display: block; color: var(--muted); font-size: 9px; margin-top: 3px; }
+        .status { padding: 5px 7px; border-radius: 7px; font-size: 8px; font-weight: 800; white-space: nowrap; }
+        .status.due { color: #a96120; background: #fff0df; }
+        .status.done { color: #17745e; background: #e2f3ef; }
+        .opportunity-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 24px; }
+        .opportunity-card { position: relative; min-height: 150px; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 17px; transition: transform .2s ease, box-shadow .2s ease; }
+        .opportunity-card:hover { transform: translateY(-4px); box-shadow: 0 14px 30px rgba(24,57,55,.1); }
+        .opportunity-icon { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 12px; color: var(--primary); background: var(--primary-light); }
+        .opportunity-card:nth-child(2) .opportunity-icon { color: #8d5b1e; background: #fff0df; }
+        .opportunity-card:nth-child(3) .opportunity-icon { color: #63518f; background: #e9e5f5; }
+        .opportunity-card h3 { margin: 14px 0 4px; font-size: 12px; font-weight: 800; }
+        .opportunity-card p { margin: 0; color: var(--muted); font-size: 9px; line-height: 1.5; }
+        .opportunity-card .card-link { color: var(--primary); font-size: 10px; font-weight: 800; }
+        .section-kicker { color: var(--primary); font-size: 10px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
+
         .hero-actions {
             display: flex;
             gap: 10px;
@@ -608,6 +638,8 @@
             .student-avatar { width: 54px; height: 54px; border-radius: 17px; font-size: 20px; }
             .profile-score { width: 100%; }
             .focus-grid { grid-template-columns: 1fr; gap: 10px; margin-bottom: 20px; }
+            .student-dashboard { grid-template-columns: 1fr; gap: 10px; margin-bottom: 20px; }
+            .opportunity-grid { grid-template-columns: 1fr; gap: 10px; margin-bottom: 20px; }
 
             .hero p {
                 font-size: 11px;
@@ -845,10 +877,10 @@
 
             <div class="profile-row">
                 <div class="student-identity">
-                    <div class="student-avatar">AS</div>
+                    <div class="student-avatar">SR</div>
                     <div>
                         <div class="profile-kicker">Good morning, student</div>
-                        <h1>Arunima's student space</h1>
+                        <h1>Siva Rakshana's student space</h1>
                         <div class="profile-meta">
                             <span>3rd Year · CSE</span>
                             <span>Roll No. CSE-3021</span>
@@ -919,6 +951,41 @@
                 <div class="today-item"><i class="fa-solid fa-lightbulb"></i><div><strong>Study goal: 45 min</strong><small>Continue your AI revision plan</small></div></div>
             </div>
         </article>
+    </section>
+
+    <section class="student-dashboard">
+        <article class="dashboard-card">
+            <div class="dashboard-heading">
+                <div><div class="section-kicker">Academic record</div><h2>Marks & internal performance</h2></div>
+                <a href="/attendance">Open record <i class="fa-solid fa-arrow-up-right-from-square ms-1"></i></a>
+            </div>
+            <div class="metric-grid">
+                <div class="metric"><strong>8.6</strong><span>Current CGPA</span><em><i class="fa-solid fa-arrow-trend-up"></i> +0.4 this term</em></div>
+                <div class="metric"><strong>88%</strong><span>Overall attendance</span><em><i class="fa-solid fa-circle-check"></i> Eligible</em></div>
+                <div class="metric"><strong>76/100</strong><span>Internal average</span><em><i class="fa-solid fa-bullseye"></i> Aim for 85</em></div>
+            </div>
+        </article>
+        <article class="dashboard-card">
+            <div class="dashboard-heading">
+                <div><div class="section-kicker">Stay ahead</div><h2>Assignments</h2></div>
+                <a href="/ai-notes">Get help <i class="fa-solid fa-arrow-up-right-from-square ms-1"></i></a>
+            </div>
+            <div class="assignment-list">
+                <div class="assignment"><div class="assignment-icon"><i class="fa-solid fa-code"></i></div><div class="assignment-info"><strong>Neural network mini project</strong><small>AI & NN · Due tomorrow</small></div><span class="status due">DUE SOON</span></div>
+                <div class="assignment"><div class="assignment-icon"><i class="fa-solid fa-database"></i></div><div class="assignment-info"><strong>SQL optimisation worksheet</strong><small>DBMS · Submitted today</small></div><span class="status done">SUBMITTED</span></div>
+            </div>
+        </article>
+    </section>
+
+    <div class="section-header">
+        <div><div class="section-kicker">Build your future</div><h2 class="section-title">Opportunities <span>for you</span></h2></div>
+        <span class="section-link">PERSONALISED</span>
+    </div>
+
+    <section class="opportunity-grid">
+        <a class="opportunity-card" href="/ai-notes"><div><div class="opportunity-icon"><i class="fa-solid fa-laptop-code"></i></div><h3>Tech growth plan</h3><p>Practice Python, AI, Git and interview problems with an AI study coach.</p></div><span class="card-link">Build skills <i class="fa-solid fa-arrow-right ms-1"></i></span></a>
+        <a class="opportunity-card" href="/announce"><div><div class="opportunity-icon"><i class="fa-solid fa-trophy"></i></div><h3>Competitions & hackathons</h3><p>Discover upcoming coding contests, project showcases and team events.</p></div><span class="card-link">Find events <i class="fa-solid fa-arrow-right ms-1"></i></span></a>
+        <a class="opportunity-card" href="/announce"><div><div class="opportunity-icon"><i class="fa-solid fa-briefcase"></i></div><h3>Internships & jobs</h3><p>Track campus drives, internships and beginner-friendly roles matched to CSE.</p></div><span class="card-link">Explore careers <i class="fa-solid fa-arrow-right ms-1"></i></span></a>
     </section>
 
 

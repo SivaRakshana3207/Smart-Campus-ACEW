@@ -103,6 +103,17 @@ def admin_page():
         return redirect(url_for('home'))
     return render_template('admin.html')
 
+@app.route('/admin-login', methods=['POST'])
+def admin_login_form():
+    username = (request.form.get('username') or '').strip()
+    password = request.form.get('password') or ''
+    if username == 'admin' and password == 'admin123':
+        session['is_admin'] = True
+        session.pop('is_student', None)
+        session.pop('is_guest', None)
+        return redirect(url_for('admin_page'))
+    return redirect(url_for('login_page', error='Invalid username or password.'))
+
 @app.route('/shuttle')
 def shuttle(): return render_template('shuttle.html')
 
@@ -143,7 +154,7 @@ def marketplace(): return render_template('marketplace.html')
 
 @app.route('/api/login', methods=['POST'])
 def login():
-    data = request.json
+    data = request.get_json(silent=True) or {}
     # Default Admin Credentials
     if data.get('username') == 'admin' and data.get('password') == 'admin123':
         session['is_admin'] = True
@@ -287,7 +298,7 @@ def add_marketplace():
 
 @app.route('/api/groq-generate', methods=['POST'])
 def groq_generate():
-    data = request.json
+    data = request.get_json(silent=True) or {}
     api_key = data.get('api_key') or os.environ.get('GROQ_API_KEY')
     if not api_key:
         return jsonify({"status": "error", "message": "Groq API Key is required"}), 400
@@ -295,7 +306,7 @@ def groq_generate():
     prompt = f"Provide detailed engineering study notes for 3rd Year students.\nSubject: {data.get('subject')}\nUnit: {data.get('unit')}\nTopic: {data.get('topic')}\nInclude key concepts and bullet points."
 
     payload = json.dumps({
-        "model": "llama3-8b-8192",
+        "model": "llama-3.1-8b-instant",
         "messages": [{"role": "user", "content": prompt}],
         "temperature": 0.5
     }).encode('utf-8')
@@ -307,9 +318,14 @@ def groq_generate():
     )
 
     try:
-        with urllib.request.urlopen(req) as response:
+        with urllib.request.urlopen(req, timeout=45) as response:
             res_data = json.loads(response.read().decode())
             return jsonify({"status": "success", "notes": res_data['choices'][0]['message']['content']})
+    except urllib.error.HTTPError as error:
+        details = error.read().decode('utf-8', errors='replace')
+        return jsonify({"status": "error", "message": f"Groq request failed ({error.code}). {details}"}), error.code
+    except urllib.error.URLError:
+        return jsonify({"status": "error", "message": "Groq is unreachable. Check your internet connection and GROQ_API_KEY."}), 502
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
