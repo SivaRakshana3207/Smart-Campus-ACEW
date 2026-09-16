@@ -389,7 +389,7 @@ def academic_chat():
         }],
         "generationConfig": {
             "temperature": 0.4,
-            "maxOutputTokens": 600
+            "maxOutputTokens": int(os.environ.get("GEMINI_CHAT_MAX_TOKENS", "2000"))
         }
     }).encode("utf-8")
 
