@@ -1596,12 +1596,16 @@
         const campusName = 'Arunachala College of Engineering for Women';
         const campusAddress = `${campusName}, Manavilai Rd, Manavilai, Nagercoil, Vellichanthai, Tamil Nadu 629203, India`;
         const campusDestinations = [
-            { name: 'Library', aliases: ['library', 'central library', 'book room', 'noolagam', 'pustakalaya', 'நூலகம்', 'पुस्तकालय'] },
-            { name: 'Canteen', aliases: ['canteen', 'food court', 'cafeteria', 'mess', 'unavu', 'உணவகம்', 'கேன்டீன்', 'कैंटीन'] },
+            { name: 'ECE Department', latitude: 8.161258, longitude: 77.332723, aliases: ['ece', 'ece department', 'electronics department', 'electronics block'] },
+            { name: 'Bus Bay', latitude: 8.161222, longitude: 77.332725, aliases: ['bus bay', 'bus stop', 'college bus bay'] },
+            { name: 'Laboratory', latitude: 8.161223, longitude: 77.332705, aliases: ['lab', 'laboratory', 'computer lab', 'laboratory block'] },
+            { name: 'Canteen and Library', latitude: 8.160969, longitude: 77.332659, aliases: ['canteen and library', 'canteen library', 'canteen', 'library', 'central library', 'food court', 'cafeteria', 'mess', 'noolagam', 'pustakalaya', 'நூலகம்', 'पुस्तकालय'] },
+            { name: 'Store', latitude: 8.160883, longitude: 77.332686, aliases: ['store', 'college store', 'campus store'] },
+            { name: 'Xerox Center', latitude: 8.160865, longitude: 77.332801, aliases: ['xerox', 'xerox center', 'photocopy', 'copy center'] },
+            { name: 'CSE Department', latitude: 8.160859, longitude: 77.332810, aliases: ['cse', 'cse department', 'computer science department', 'computer science block'] },
             { name: 'Main Gate', aliases: ['main gate', 'college gate', 'entrance', 'entrance gate', 'நுழைவாயில்', 'मुख्य द्वार'] },
             { name: 'Admin Block', aliases: ['admin block', 'administration block', 'principal office', 'admin office', 'நிர்வாக கட்டிடம்', 'प्रशासनिक ब्लॉक'] },
             { name: 'Main Academic Block', aliases: ['main academic block', 'academic block', 'main block'] },
-            { name: 'ECE Block', aliases: ['ece block', 'electronics block', 'ece department'] },
             { name: 'Sports Complex', aliases: ['sports complex', 'sports ground', 'playground', 'ground', 'விளையாட்டு மைதானம்', 'खेल मैदान'] },
             { name: 'Seetha Lakshmi Hostel Block A', aliases: ['hostel', 'hostels', 'hostel a', 'seetha lakshmi hostel', 'seetha lakshmi hostel block a', 'விடுதி', 'छात्रावास'] },
             { name: 'AI and DS Compute Lab', aliases: ['ai ds lab', 'ai and ds lab', 'compute lab', 'artificial intelligence lab', 'ai lab', 'ஆய்வகம்', 'प्रयोगशाला'] },
@@ -1638,7 +1642,9 @@
         };
 
         const openCampusDirections = (destination) => {
-            const destinationQuery = encodeURIComponent(`${destination.name}, ${campusAddress}`);
+            const destinationQuery = destination.latitude && destination.longitude
+                ? encodeURIComponent(`${destination.latitude},${destination.longitude}`)
+                : encodeURIComponent(`${destination.name}, ${campusAddress}`);
             const openMaps = (origin) => {
                 const originQuery = origin ? `&origin=${encodeURIComponent(`${origin.latitude},${origin.longitude}`)}` : '';
                 const mapsUrl = `https://www.google.com/maps/dir/?api=1${originQuery}&destination=${destinationQuery}&travelmode=walking&dir_action=navigate&region=in&hl=en`;

@@ -70,7 +70,7 @@
                             <input class="form-control" id="password" name="password" type="password" autocomplete="current-password" required>
                         </div>
                         <button id="admin-submit" class="admin-btn w-100" type="submit"><i class="fa-solid fa-right-to-bracket me-1"></i>Sign in as admin</button>
-                        <div id="login-message" class="form-message" role="alert" aria-live="polite"></div>
+                        <div id="login-message" class="form-message" role="alert" aria-live="polite">{{ error }}</div>
                     </form>
                 </div>
 
@@ -82,7 +82,9 @@
                         <strong>Student access</strong>
                     </div>
                     <p>Use your college Google account to continue.</p>
-                    <button id="google-login" class="google-btn" type="button"><span class="google-g">G</span>Continue with Google</button>
+                    <form action="/api/student-login" method="post">
+                        <button id="google-login" class="google-btn" type="submit"><span class="google-g">G</span>Continue with Google</button>
+                    </form>
                 </div>
 
                 <div class="divider">CAMPUS VISITOR</div>
@@ -93,7 +95,9 @@
                         <strong>Explore campus toolkit</strong>
                     </div>
                     <p>Access public campus tools without signing in.</p>
-                    <button id="guest-login" class="guest-btn" type="button"><i class="fa-solid fa-arrow-right me-1"></i>Continue without login</button>
+                    <form action="/api/guest-login" method="post">
+                        <button id="guest-login" class="guest-btn" type="submit"><i class="fa-solid fa-arrow-right me-1"></i>Continue without login</button>
+                    </form>
                     <div class="guest-note">Student records and admin tools remain protected.</div>
                 </div>
                 <a class="back-link" href="#guest-login"><i class="fa-solid fa-compass me-1"></i>Public campus access is available above</a>
@@ -101,62 +105,6 @@
         </section>
     </main>
     <script>
-        const showLoginError = (message) => {
-            document.getElementById('login-message').textContent = message;
-        };
-
-        const postLogin = async (url) => {
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: { 'Accept': 'application/json' },
-                credentials: 'same-origin'
-            });
-            const result = await response.json();
-            if (!response.ok || result.status !== 'success') throw new Error(result.message || 'Unable to continue.');
-            window.location.assign('/');
-        };
-
-        document.getElementById('google-login').addEventListener('click', async () => {
-            const button = document.getElementById('google-login');
-            button.disabled = true;
-            button.textContent = 'Signing in...';
-            try { await postLogin('/api/student-login'); }
-            catch (error) { button.disabled = false; button.innerHTML = '<span class="google-g">G</span>Continue with Google'; showLoginError(error.message); }
-        });
-
-        document.getElementById('guest-login').addEventListener('click', async () => {
-            const button = document.getElementById('guest-login');
-            button.disabled = true;
-            button.textContent = 'Opening campus toolkit...';
-            try { await postLogin('/api/guest-login'); }
-            catch (error) { button.disabled = false; button.innerHTML = '<i class="fa-solid fa-arrow-right me-1"></i>Continue without login'; showLoginError(error.message); }
-        });
-
-        document.getElementById('admin-login-form').addEventListener('submit', async (event) => {
-            event.preventDefault();
-            const button = document.getElementById('admin-submit');
-            button.disabled = true;
-            button.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i>Checking credentials...';
-            try {
-                const response = await fetch('/api/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                    credentials: 'same-origin',
-                    body: JSON.stringify({
-                        username: document.getElementById('username').value.trim(),
-                        password: document.getElementById('password').value
-                    })
-                });
-                const result = await response.json();
-                if (!response.ok || result.status !== 'success') throw new Error(result.message || 'Invalid credentials.');
-                window.location.assign('/admin');
-            } catch (error) {
-                button.disabled = false;
-                button.innerHTML = '<i class="fa-solid fa-right-to-bracket me-1"></i>Sign in as admin';
-                showLoginError(error.message || 'Unable to connect to the server.');
-            }
-        });
-
         if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('/service-worker.js'));
     </script>
 </body>

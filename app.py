@@ -91,7 +91,7 @@ def home():
 def login_page():
     if session.get('is_student') or session.get('is_admin') or session.get('is_guest'):
         return redirect(url_for('home'))
-    return render_template('login.html')
+    return render_template('login.html', error=request.args.get('error', ''))
 
 @app.route('/service-worker.js')
 def service_worker():
@@ -168,6 +168,8 @@ def student_login():
     session['is_student'] = True
     session.pop('is_admin', None)
     session.pop('is_guest', None)
+    if not request.is_json:
+        return redirect(url_for('home'))
     return jsonify({"status": "success", "message": "Student login successful!"})
 
 @app.route('/api/guest-login', methods=['POST'])
@@ -175,6 +177,8 @@ def guest_login():
     session['is_guest'] = True
     session.pop('is_student', None)
     session.pop('is_admin', None)
+    if not request.is_json:
+        return redirect(url_for('home'))
     return jsonify({"status": "success", "message": "Guest access enabled!"})
 
 @app.route('/api/logout', methods=['GET'])
