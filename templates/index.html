@@ -235,6 +235,108 @@
         .opportunity-card .card-link { color: var(--primary); font-size: 10px; font-weight: 800; }
         .section-kicker { color: var(--primary); font-size: 10px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
 
+        .dashboard-nav { display: flex; gap: 7px; overflow-x: auto; margin: -5px 0 20px; padding: 3px 0 8px; scrollbar-width: none; }
+        .dashboard-nav a { flex: 0 0 auto; padding: 8px 11px; border: 1px solid var(--border); border-radius: 9px; color: var(--muted); background: rgba(255,255,255,.75); font-size: 10px; font-weight: 800; }
+        .dashboard-nav a:hover { color: var(--primary); border-color: #9bcfc5; }
+        .command-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 14px; margin-bottom: 14px; }
+        .command-card { min-width: 0; background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 18px; box-shadow: 0 8px 24px rgba(24,57,55,.05); }
+        .card-heading { display: flex; justify-content: space-between; align-items: start; gap: 12px; margin-bottom: 14px; }
+        .card-heading h2 { margin: 3px 0 0; font-size: 16px; font-weight: 800; }
+        .card-heading p { margin: 4px 0 0; color: var(--muted); font-size: 10px; }
+        .text-link { border: 0; padding: 0; color: var(--primary); background: none; font-size: 10px; font-weight: 800; white-space: nowrap; }
+        .assignment-table { display: grid; gap: 8px; }
+        .assignment-row { display: grid; grid-template-columns: 28px 1fr auto; gap: 9px; align-items: center; padding: 9px; border-radius: 11px; background: #f6f9f7; }
+        .assignment-row i { color: var(--primary); text-align: center; }
+        .assignment-row strong { display: block; font-size: 10px; }
+        .assignment-row small { display: block; color: var(--muted); font-size: 9px; margin-top: 3px; }
+        .priority { padding: 5px 7px; border-radius: 7px; font-size: 8px; font-weight: 800; white-space: nowrap; }
+        .priority.urgent { color: #b83d35; background: #fde9e7; }
+        .priority.upcoming { color: #a96120; background: #fff0df; }
+        .priority.completed { color: #17745e; background: #e2f3ef; }
+        .exam-list { display: grid; gap: 7px; }
+        .exam-item { overflow: hidden; border: 1px solid #e5ece9; border-radius: 11px; }
+        .exam-toggle { display: flex; align-items: center; justify-content: space-between; width: 100%; border: 0; padding: 11px; color: var(--text); background: #f6f9f7; text-align: left; font-size: 10px; font-weight: 800; }
+        .exam-toggle span { color: var(--muted); font-size: 9px; font-weight: 600; }
+        .exam-detail { display: none; padding: 10px 11px; color: var(--muted); font-size: 9px; line-height: 1.6; }
+        .exam-item.open .exam-detail { display: block; }
+        .exam-item.open .exam-toggle i { transform: rotate(180deg); }
+        .timetable-card { margin-bottom: 14px; }
+        .timetable { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+        .period { min-height: 96px; padding: 10px; border-left: 3px solid var(--primary); border-radius: 10px; background: #f6f9f7; }
+        .period.lab { border-color: var(--accent); background: #fff8ed; }
+        .period.elective { border-color: #7663a3; background: #f5f1fb; }
+        .period time { color: var(--muted); font-size: 8px; font-weight: 800; }
+        .period strong { display: block; margin: 7px 0 4px; font-size: 10px; }
+        .period small { display: block; color: var(--muted); font-size: 8px; line-height: 1.45; }
+        .legend { display: flex; gap: 12px; margin-top: 12px; color: var(--muted); font-size: 9px; }
+        .legend b { display: inline-block; width: 7px; height: 7px; margin-right: 4px; border-radius: 50%; background: var(--primary); }
+        .legend .lab-dot { background: var(--accent); }
+        .legend .elective-dot { background: #7663a3; }
+        .record-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+        .record-stat { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 12px; background: #f6f9f7; }
+        .record-stat strong { display: block; font-size: 18px; }
+        .record-stat small { color: var(--muted); font-size: 9px; }
+        .record-icon { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 11px; color: var(--primary); background: var(--primary-light); }
+        .semester-row { display: grid; grid-template-columns: 42px 1fr 30px; gap: 9px; align-items: center; margin-top: 10px; font-size: 9px; font-weight: 800; }
+        .record-bar { height: 7px; overflow: hidden; border-radius: 5px; background: #e2ebe7; }
+        .record-bar span { display: block; height: 100%; border-radius: inherit; background: var(--primary); }
+        .attendance-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; }
+        .attendance-number { padding: 14px 10px; border-radius: 12px; background: #f6f9f7; text-align: center; }
+        .attendance-number strong { display: block; color: var(--text); font-size: 21px; }
+        .attendance-number small { display: block; margin-top: 5px; color: var(--muted); font-size: 8px; }
+        .attendance-total { margin-top: 12px; padding: 11px 12px; border-radius: 10px; color: #17745e; background: #e2f3ef; font-size: 10px; font-weight: 800; }
+        .marks-list { display: grid; gap: 8px; }
+        .mark-row { display: grid; grid-template-columns: 1fr 35px 58px; gap: 7px; align-items: center; color: var(--text); font-size: 9px; }
+        .mark-row small { color: var(--muted); font-size: 8px; }
+        .pass { color: var(--success); font-weight: 800; }
+        .improve { color: #b56a1f; font-size: 8px; }
+        .ai-panel { background: linear-gradient(135deg, #0d4749, #176b68); color: white; }
+        .ai-panel .section-kicker, .ai-panel .card-heading p { color: #a8e1d5; }
+        .ai-panel .card-heading h2 { color: white; }
+        .ai-controls { display: grid; grid-template-columns: 1.2fr .7fr 1.4fr auto; gap: 8px; align-items: end; }
+        .ai-controls label { display: block; margin-bottom: 5px; color: #b8e6dc; font-size: 9px; font-weight: 800; }
+        .ai-controls select { width: 100%; min-height: 38px; border: 0; border-radius: 9px; padding: 0 9px; color: var(--text); background: white; font-size: 10px; }
+        .ai-actions { display: flex; gap: 7px; margin-top: 12px; }
+        .ai-action { border: 1px solid rgba(255,255,255,.28); border-radius: 9px; padding: 8px 11px; color: white; background: rgba(255,255,255,.12); font-size: 10px; font-weight: 800; }
+        .ai-action.active, .ai-action:hover { color: var(--primary-dark); background: white; }
+        .ai-output { display: none; max-height: 360px; overflow-y: auto; margin-top: 12px; padding: 12px; border-radius: 10px; color: var(--text); background: white; font-size: 10px; line-height: 1.6; }
+        .ai-output.visible { display: block; }
+        .ai-message { margin-bottom: 9px; padding: 9px 10px; border-radius: 10px; white-space: pre-wrap; }
+        .ai-message.user { margin-left: 12%; color: white; background: var(--primary); }
+        .ai-message.assistant { margin-right: 8%; background: #f1f6f3; }
+        .ai-message strong { display: block; margin-bottom: 3px; font-size: 9px; }
+        .ai-chat-row { display: flex; gap: 8px; margin-top: 10px; }
+        .ai-question { min-width: 0; flex: 1; border: 0; border-radius: 9px; padding: 10px; color: var(--text); background: white; font-size: 10px; }
+        .ai-send { border: 0; border-radius: 9px; padding: 0 14px; color: var(--primary-dark); background: #f2a65a; font-size: 10px; font-weight: 800; }
+        .career-grid { display: grid; grid-template-columns: .8fr 1.2fr; gap: 14px; margin-bottom: 14px; }
+        .role-select { width: 100%; border: 1px solid var(--border); border-radius: 10px; padding: 11px; color: var(--text); background: #f6f9f7; font-size: 11px; font-weight: 700; }
+        .roadmap { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; margin-top: 13px; }
+        .milestone { min-height: 90px; padding: 10px; border-top: 3px solid var(--primary); border-radius: 9px; background: #f6f9f7; }
+        .milestone small { color: var(--primary); font-size: 8px; font-weight: 800; }
+        .milestone strong { display: block; margin: 7px 0 4px; font-size: 10px; }
+        .milestone span { color: var(--muted); font-size: 8px; line-height: 1.4; }
+        .resource-list { display: grid; gap: 8px; margin-top: 13px; }
+        .resource { display: flex; gap: 9px; align-items: center; padding: 9px; border-radius: 9px; background: #f6f9f7; }
+        .resource i { color: #d44b42; }
+        .resource strong { display: block; font-size: 9px; }
+        .resource small { color: var(--muted); font-size: 8px; }
+        .career-projects { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin-top: 12px; }
+        .project { padding: 9px; border: 1px solid #e5ece9; border-radius: 9px; font-size: 9px; }
+        .project b { color: var(--primary); font-size: 8px; }
+        .project strong { display: block; margin-top: 5px; }
+        .opportunity-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; }
+        .opportunity-list { display: grid; gap: 8px; }
+        .job-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; padding: 10px; border-radius: 10px; background: #f6f9f7; }
+        .job-row strong { display: block; font-size: 10px; }
+        .job-row small { display: block; color: var(--muted); font-size: 8px; margin-top: 4px; }
+        .match { color: var(--success); font-size: 9px; font-weight: 800; }
+        .apply-btn { align-self: center; border: 0; border-radius: 7px; padding: 6px 8px; color: white; background: var(--primary); font-size: 8px; font-weight: 800; }
+        .tracking-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+        .tracking-stat { padding: 11px; border-radius: 10px; background: #f6f9f7; }
+        .tracking-stat strong { display: block; font-size: 18px; }
+        .tracking-stat small { color: var(--muted); font-size: 8px; }
+        .feedback { padding: 10px; border-radius: 10px; color: #9b641e; background: #fff7e9; font-size: 9px; line-height: 1.5; }
+
         .hero-actions {
             display: flex;
             gap: 10px;
@@ -640,6 +742,13 @@
             .focus-grid { grid-template-columns: 1fr; gap: 10px; margin-bottom: 20px; }
             .student-dashboard { grid-template-columns: 1fr; gap: 10px; margin-bottom: 20px; }
             .opportunity-grid { grid-template-columns: 1fr; gap: 10px; margin-bottom: 20px; }
+            .command-grid, .record-grid, .career-grid, .opportunity-layout { grid-template-columns: 1fr; gap: 10px; }
+            .timetable { grid-template-columns: repeat(2, 1fr); }
+            .ai-controls { grid-template-columns: 1fr 1fr; }
+            .ai-controls > div:nth-child(3) { grid-column: 1 / -1; }
+            .ai-controls > .ai-action { grid-column: 1 / -1; }
+            .roadmap { grid-template-columns: repeat(2, 1fr); }
+            .career-projects { grid-template-columns: 1fr; }
 
             .hero p {
                 font-size: 11px;
@@ -879,11 +988,11 @@
                 <div class="student-identity">
                     <div class="student-avatar">SR</div>
                     <div>
-                        <div class="profile-kicker">Good morning, student</div>
-                        <h1>Siva Rakshana's student space</h1>
+                        <div class="profile-kicker">Student profile</div>
+                        <h1>Good Afternoon Siva Rakshana</h1>
                         <div class="profile-meta">
-                            <span>3rd Year · CSE</span>
-                            <span>Roll No. CSE-3021</span>
+                            <span>3rd Year</span>
+                            <span>Roll No: 172</span>
                         </div>
                     </div>
                 </div>
@@ -920,72 +1029,59 @@
 
     </section>
 
-    <section class="focus-grid">
-        <article class="focus-card">
-            <div class="focus-title">
-                <div>
-                    <div class="eyebrow">Academic pulse</div>
-                    <h3>Keep your semester moving</h3>
-                </div>
-                <a class="focus-link" href="/attendance">View all <i class="fa-solid fa-arrow-up-right-from-square ms-1"></i></a>
-            </div>
-            <div class="subject-row">
-                <div class="subject-icon"><i class="fa-solid fa-network-wired"></i></div>
-                <div><strong>Computer Networks</strong><small>Attendance · 92%</small></div>
-                <div class="mini-progress"><span style="width:92%"></span></div>
-            </div>
-            <div class="subject-row">
-                <div class="subject-icon"><i class="fa-solid fa-brain"></i></div>
-                <div><strong>AI & Neural Networks</strong><small>Attendance · 88%</small></div>
-                <div class="mini-progress"><span style="width:88%"></span></div>
+    <nav class="dashboard-nav" aria-label="Student dashboard sections">
+        <a href="#academics">Academics</a><a href="#timetable">Timetable</a><a href="#records">Records</a><a href="#learning">AI Learning</a><a href="#career">Career Path</a><a href="#opportunities">Jobs & Internships</a>
+    </nav>
+
+    <section id="academics" class="command-grid">
+        <article class="command-card">
+            <div class="card-heading"><div><div class="section-kicker">Academic overview</div><h2>Assignments & priorities</h2><p>Keep every submission visible and on time.</p></div><i class="fa-solid fa-list-check" style="color:var(--primary)"></i></div>
+            <div class="assignment-table">
+                <div class="assignment-row"><i class="fa-solid fa-code"></i><div><strong>Neural network mini project</strong><small>AI & Neural Networks · Due 18 Sep</small></div><span class="priority urgent">URGENT</span></div>
+                <div class="assignment-row"><i class="fa-solid fa-database"></i><div><strong>SQL optimisation worksheet</strong><small>DBMS · Due 21 Sep</small></div><span class="priority upcoming">UPCOMING</span></div>
+                <div class="assignment-row"><i class="fa-solid fa-network-wired"></i><div><strong>Routing protocol case study</strong><small>Computer Networks · Submitted 14 Sep</small></div><span class="priority completed">COMPLETED</span></div>
             </div>
         </article>
-        <article class="focus-card">
-            <div class="focus-title">
-                <div><div class="eyebrow">Today on campus</div><h3>Your next steps</h3></div>
-                <i class="fa-regular fa-calendar-check" style="color:var(--primary)"></i>
-            </div>
-            <div class="today-list">
-                <div class="today-item"><i class="fa-solid fa-clock"></i><div><strong>AI Lab · 10:30 AM</strong><small>Academic Block, Room 204</small></div></div>
-                <div class="today-item"><i class="fa-solid fa-bullhorn"></i><div><strong>2 new campus updates</strong><small>Review before your next class</small></div></div>
-                <div class="today-item"><i class="fa-solid fa-lightbulb"></i><div><strong>Study goal: 45 min</strong><small>Continue your AI revision plan</small></div></div>
+        <article class="command-card">
+            <div class="card-heading"><div><div class="section-kicker">Exam preparation</div><h2>Current exam portion</h2><p>Tap a subject to see what to study next.</p></div><i class="fa-solid fa-book-open" style="color:var(--primary)"></i></div>
+            <div class="exam-list">
+                <div class="exam-item open"><button class="exam-toggle" type="button">AI & Neural Networks <span>24 Sep <i class="fa-solid fa-chevron-down ms-1"></i></span></button><div class="exam-detail"><strong>Coverage:</strong> Search algorithms, knowledge representation, backpropagation and CNNs.<br><strong>Priority:</strong> Revise backpropagation first, then practice two numerical problems.</div></div>
+                <div class="exam-item"><button class="exam-toggle" type="button">Database Management Systems <span>27 Sep <i class="fa-solid fa-chevron-down ms-1"></i></span></button><div class="exam-detail"><strong>Coverage:</strong> Normalisation, transactions, indexing and SQL optimisation.<br><strong>Priority:</strong> Complete solved SQL queries and revise normal forms.</div></div>
+                <div class="exam-item"><button class="exam-toggle" type="button">Computer Networks <span>30 Sep <i class="fa-solid fa-chevron-down ms-1"></i></span></button><div class="exam-detail"><strong>Coverage:</strong> TCP/IP, routing, congestion control and application protocols.<br><strong>Priority:</strong> Draw protocol diagrams and compare routing algorithms.</div></div>
             </div>
         </article>
     </section>
 
-    <section class="student-dashboard">
-        <article class="dashboard-card">
-            <div class="dashboard-heading">
-                <div><div class="section-kicker">Academic record</div><h2>Marks & internal performance</h2></div>
-                <a href="/attendance">Open record <i class="fa-solid fa-arrow-up-right-from-square ms-1"></i></a>
-            </div>
-            <div class="metric-grid">
-                <div class="metric"><strong>8.6</strong><span>Current CGPA</span><em><i class="fa-solid fa-arrow-trend-up"></i> +0.4 this term</em></div>
-                <div class="metric"><strong>88%</strong><span>Overall attendance</span><em><i class="fa-solid fa-circle-check"></i> Eligible</em></div>
-                <div class="metric"><strong>76/100</strong><span>Internal average</span><em><i class="fa-solid fa-bullseye"></i> Aim for 85</em></div>
-            </div>
-        </article>
-        <article class="dashboard-card">
-            <div class="dashboard-heading">
-                <div><div class="section-kicker">Stay ahead</div><h2>Assignments</h2></div>
-                <a href="/ai-notes">Get help <i class="fa-solid fa-arrow-up-right-from-square ms-1"></i></a>
-            </div>
-            <div class="assignment-list">
-                <div class="assignment"><div class="assignment-icon"><i class="fa-solid fa-code"></i></div><div class="assignment-info"><strong>Neural network mini project</strong><small>AI & NN · Due tomorrow</small></div><span class="status due">DUE SOON</span></div>
-                <div class="assignment"><div class="assignment-icon"><i class="fa-solid fa-database"></i></div><div class="assignment-info"><strong>SQL optimisation worksheet</strong><small>DBMS · Submitted today</small></div><span class="status done">SUBMITTED</span></div>
-            </div>
-        </article>
+    <section id="timetable" class="command-card timetable-card">
+        <div class="card-heading"><div><div class="section-kicker">Tomorrow · Wednesday</div><h2>Complete timetable</h2><p>Eight periods with faculty and venue details.</p></div><i class="fa-regular fa-calendar" style="color:var(--primary)"></i></div>
+        <div class="timetable">
+            <div class="period"><time>08:30 – 09:20</time><strong>AI & Neural Networks</strong><small>Dr. Meena · CSE-204</small></div><div class="period"><time>09:20 – 10:10</time><strong>Database Systems</strong><small>Prof. Kumar · CSE-204</small></div><div class="period lab"><time>10:30 – 12:10</time><strong>AI Laboratory</strong><small>Ms. Divya · AI Lab</small></div><div class="period elective"><time>12:10 – 01:00</time><strong>Professional English</strong><small>Ms. Fathima · Seminar Hall</small></div><div class="period"><time>02:00 – 02:50</time><strong>Computer Networks</strong><small>Mr. Arun · CSE-204</small></div><div class="period"><time>02:50 – 03:40</time><strong>Data Structures</strong><small>Dr. Priya · CSE-204</small></div><div class="period lab"><time>03:40 – 04:30</time><strong>Networks Lab</strong><small>Mr. Arun · Network Lab</small></div><div class="period elective"><time>04:30 – 05:20</time><strong>Career Skills</strong><small>Placement Cell · Lab 3</small></div>
+        </div>
+        <div class="legend"><span><b></b>Theory</span><span><b class="lab-dot"></b>Laboratory</span><span><b class="elective-dot"></b>Elective / skill</span></div>
     </section>
 
-    <div class="section-header">
-        <div><div class="section-kicker">Build your future</div><h2 class="section-title">Opportunities <span>for you</span></h2></div>
-        <span class="section-link">PERSONALISED</span>
-    </div>
+    <section id="records" class="record-grid">
+        <article class="command-card"><div class="card-heading"><div><div class="section-kicker">Academic record</div><h2>CGPA progression</h2></div><div class="record-stat"><div class="record-icon"><i class="fa-solid fa-chart-line"></i></div><div><strong>8.6</strong><small>Current CGPA</small></div></div></div><div class="semester-row"><span>Sem 1</span><div class="record-bar"><span style="width:76%"></span></div><b>7.6</b></div><div class="semester-row"><span>Sem 2</span><div class="record-bar"><span style="width:80%"></span></div><b>8.0</b></div><div class="semester-row"><span>Sem 3</span><div class="record-bar"><span style="width:86%"></span></div><b>8.6</b></div><div class="semester-row"><span>Sem 4</span><div class="record-bar"><span style="width:90%"></span></div><b>9.0</b></div></article>
+        <article class="command-card"><div class="card-heading"><div><div class="section-kicker">Attendance health</div><h2>Overall attendance</h2></div><div class="record-stat"><div class="record-icon"><i class="fa-solid fa-user-check"></i></div><div><strong>88%</strong><small>Overall</small></div></div></div><div class="attendance-summary"><div class="attendance-number"><strong>120</strong><small>Total working days</small></div><div class="attendance-number"><strong>14</strong><small>Days on leave</small></div><div class="attendance-number"><strong>106</strong><small>Days attended</small></div></div><div class="attendance-total"><i class="fa-solid fa-circle-check me-1"></i> 106 of 120 days attended · Eligible for examinations</div></article>
+        <article class="command-card"><div class="card-heading"><div><div class="section-kicker">Internal exams</div><h2>Marks & improvement signals</h2></div><i class="fa-solid fa-medal" style="color:var(--accent)"></i></div><div class="marks-list"><div class="mark-row"><span>AI & Neural Networks <small>Internal 2</small></span><b>82</b><span class="pass"><i class="fa-solid fa-arrow-trend-up"></i> +8</span></div><div class="mark-row"><span>DBMS <small>Internal 2</small></span><b>76</b><span class="improve"><i class="fa-solid fa-minus"></i> Focus</span></div><div class="mark-row"><span>Computer Networks <small>Internal 2</small></span><b>81</b><span class="pass"><i class="fa-solid fa-arrow-trend-up"></i> +5</span></div><div class="mark-row"><span>Data Structures <small>Internal 2</small></span><b>74</b><span class="improve"><i class="fa-solid fa-bullseye"></i> Improve</span></div></div></article>
+    </section>
 
-    <section class="opportunity-grid">
-        <a class="opportunity-card" href="/ai-notes"><div><div class="opportunity-icon"><i class="fa-solid fa-laptop-code"></i></div><h3>Tech growth plan</h3><p>Practice Python, AI, Git and interview problems with an AI study coach.</p></div><span class="card-link">Build skills <i class="fa-solid fa-arrow-right ms-1"></i></span></a>
-        <a class="opportunity-card" href="/announce"><div><div class="opportunity-icon"><i class="fa-solid fa-trophy"></i></div><h3>Competitions & hackathons</h3><p>Discover upcoming coding contests, project showcases and team events.</p></div><span class="card-link">Find events <i class="fa-solid fa-arrow-right ms-1"></i></span></a>
-        <a class="opportunity-card" href="/announce"><div><div class="opportunity-icon"><i class="fa-solid fa-briefcase"></i></div><h3>Internships & jobs</h3><p>Track campus drives, internships and beginner-friendly roles matched to CSE.</p></div><span class="card-link">Explore careers <i class="fa-solid fa-arrow-right ms-1"></i></span></a>
+    <section id="learning" class="command-card ai-panel" style="margin-bottom:14px">
+        <div class="card-heading"><div><div class="section-kicker">AI-powered learning hub</div><h2>Learn smarter with Groq AI</h2><p>Choose a topic and generate an explanation, exam notes, or practice questions.</p></div><i class="fa-solid fa-wand-magic-sparkles" style="font-size:22px;color:#f2a65a"></i></div>
+        <div class="ai-controls"><div><label for="learn-subject">Subject name</label><select id="learn-subject"><option>AI & Neural Networks</option><option>Database Management Systems</option><option>Computer Networks</option><option>Data Structures</option></select></div><div><label for="learn-unit">Unit number</label><select id="learn-unit"><option>Unit 1</option><option>Unit 2</option><option>Unit 3</option><option>Unit 4</option></select></div><div><label for="learn-topic">Specific topic</label><select id="learn-topic"><option>Backpropagation and gradient descent</option><option>SQL normalisation</option><option>TCP congestion control</option><option>Graph traversal algorithms</option></select></div></div>
+        <div class="ai-actions"><button class="ai-action active" type="button" data-ai-action="Learn"><i class="fa-solid fa-lightbulb me-1"></i>Learn</button><button class="ai-action" type="button" data-ai-action="Notes"><i class="fa-solid fa-note-sticky me-1"></i>Notes</button><button class="ai-action" type="button" data-ai-action="Practice"><i class="fa-solid fa-circle-question me-1"></i>Practice</button></div>
+        <div id="ai-dashboard-output" class="ai-output visible" aria-live="polite"><div class="ai-message assistant"><strong>ACEW AI TUTOR</strong>Ask me anything about your subjects, code, assignments, projects, interviews, internships, or career preparation.</div></div>
+        <form id="ai-chat-form" class="ai-chat-row"><input id="ai-question" class="ai-question" type="text" maxlength="4000" placeholder="Ask anything... e.g. Explain backpropagation simply" autocomplete="off"><button class="ai-send" type="submit"><i class="fa-solid fa-paper-plane me-1"></i>Ask</button></form>
+    </section>
+
+    <section id="career" class="career-grid">
+        <article class="command-card"><div class="card-heading"><div><div class="section-kicker">Tech career learning path</div><h2>Choose your target role</h2><p>Your roadmap updates with the role you select.</p></div><i class="fa-solid fa-route" style="color:var(--primary)"></i></div><select id="career-role" class="role-select"><option>Full Stack Java Developer</option><option>Data Scientist</option><option>Cloud Engineer</option><option>DevOps Engineer</option><option>AI / ML Engineer</option></select><div id="roadmap" class="roadmap"><div class="milestone"><small>01 · Foundation</small><strong>Java & Git</strong><span>Build clean programming fundamentals.</span></div><div class="milestone"><small>02 · Build</small><strong>Spring Boot</strong><span>Create REST APIs and services.</span></div><div class="milestone"><small>03 · Ship</small><strong>Full-stack project</strong><span>Deploy a real portfolio app.</span></div><div class="milestone"><small>04 · Ready</small><strong>Interview practice</strong><span>Assess skills and solve problems.</span></div></div><div class="career-projects"><div class="project"><b>EASY</b><strong>Student REST API</strong></div><div class="project"><b>MEDIUM</b><strong>Placement tracker</strong></div><div class="project"><b>HARD</b><strong>Cloud microservice</strong></div></div></article>
+        <article class="command-card"><div class="card-heading"><div><div class="section-kicker">Curated resources</div><h2>Learn from the best next</h2><p>Practice checkpoints are saved on this device.</p></div><i class="fa-brands fa-youtube" style="color:#d44b42;font-size:20px"></i></div><div class="resource-list"><a class="resource" href="https://www.youtube.com/results?search_query=java+spring+boot+full+course" target="_blank" rel="noreferrer"><i class="fa-brands fa-youtube"></i><div><strong>Spring Boot complete course</strong><small>Foundation · Watch on YouTube</small></div><i class="fa-solid fa-arrow-up-right-from-square ms-auto"></i></a><a class="resource" href="https://www.youtube.com/results?search_query=system+design+for+beginners" target="_blank" rel="noreferrer"><i class="fa-brands fa-youtube"></i><div><strong>System design for beginners</strong><small>Build · Watch on YouTube</small></div><i class="fa-solid fa-arrow-up-right-from-square ms-auto"></i></a><a class="resource" href="https://www.youtube.com/results?search_query=technical+interview+coding+practice" target="_blank" rel="noreferrer"><i class="fa-brands fa-youtube"></i><div><strong>Technical interview practice</strong><small>Ready · Watch on YouTube</small></div><i class="fa-solid fa-arrow-up-right-from-square ms-auto"></i></a></div></article>
+    </section>
+
+    <section id="opportunities" class="opportunity-layout">
+        <article class="command-card"><div class="card-heading"><div><div class="section-kicker">Internship & job portal</div><h2>Matched opportunities</h2><p>Filtered for your selected career role.</p></div><i class="fa-solid fa-briefcase" style="color:var(--primary)"></i></div><div class="opportunity-list"><div class="job-row" data-role="Full Stack Java Developer"><div><strong>Junior Java Developer · Zoho</strong><small>₹25,000/month · Chennai · Deadline 24 Sep</small></div><div><span class="match">94% match</span><button class="apply-btn d-block mt-2" type="button">Apply</button></div></div><div class="job-row" data-role="Data Scientist|AI / ML Engineer|Full Stack Java Developer"><div><strong>Software Intern · Freshworks</strong><small>₹30,000/month · Remote · Deadline 28 Sep</small></div><div><span class="match">88% match</span><button class="apply-btn d-block mt-2" type="button">Apply</button></div></div><div class="job-row" data-role="Cloud Engineer|DevOps Engineer"><div><strong>Cloud Engineering Intern · AWS Academy</strong><small>₹20,000/month · Bengaluru · Deadline 02 Oct</small></div><div><span class="match">76% match</span><button class="apply-btn d-block mt-2" type="button">Apply</button></div></div></div></article>
+        <article class="command-card"><div class="card-heading"><div><div class="section-kicker">Application tracker</div><h2>Your career progress</h2></div><i class="fa-solid fa-chart-pie" style="color:var(--primary)"></i></div><div class="tracking-grid"><div class="tracking-stat"><strong id="application-count">3</strong><small>Applications submitted</small></div><div class="tracking-stat"><strong>1</strong><small>Interviews scheduled</small></div><div class="tracking-stat"><strong>0</strong><small>Offers received</small></div></div><div class="feedback"><strong>Feedback focus:</strong> Strengthen system design explanations and add one deployed project to your portfolio.</div></article>
     </section>
 
 
@@ -1471,6 +1567,126 @@
 
 
 <script>
+
+    /* Student dashboard interactions and local demo state. */
+    const studentPrefs = JSON.parse(localStorage.getItem('acewStudentPrefs') || '{}');
+    const careerRole = document.getElementById('career-role');
+    const aiOutput = document.getElementById('ai-dashboard-output');
+    const aiChatForm = document.getElementById('ai-chat-form');
+    const aiQuestion = document.getElementById('ai-question');
+    const aiSend = aiChatForm.querySelector('.ai-send');
+    const aiHistory = [];
+
+    const addAIMessage = (role, content) => {
+        const message = document.createElement('div');
+        message.className = `ai-message ${role}`;
+        const label = role === 'user' ? 'YOU' : 'ACEW AI TUTOR';
+        message.innerHTML = `<strong>${label}</strong>`;
+        message.appendChild(document.createTextNode(content));
+        aiOutput.appendChild(message);
+        aiOutput.classList.add('visible');
+        aiOutput.scrollTop = aiOutput.scrollHeight;
+    };
+
+    const askGroq = async (question) => {
+        const response = await fetch('/api/groq-chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            credentials: 'same-origin',
+            body: JSON.stringify({
+                question,
+                history: aiHistory.slice(0, -1),
+                context: {
+                    subject: document.getElementById('learn-subject').value,
+                    unit: document.getElementById('learn-unit').value,
+                    topic: document.getElementById('learn-topic').value
+                }
+            })
+        });
+        const result = await response.json();
+        if (!response.ok || result.status !== 'success') throw new Error(result.message || 'The AI tutor could not answer.');
+        return result.answer;
+    };
+
+    aiChatForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const question = aiQuestion.value.trim();
+        if (!question) return;
+        addAIMessage('user', question);
+        aiHistory.push({ role: 'user', content: question });
+        aiQuestion.value = '';
+        aiQuestion.disabled = true;
+        aiSend.disabled = true;
+        aiSend.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+        try {
+            const answer = await askGroq(question);
+            addAIMessage('assistant', answer);
+            aiHistory.push({ role: 'assistant', content: answer });
+        } catch (error) {
+            addAIMessage('assistant', `I could not answer right now. ${error.message}`);
+        } finally {
+            aiQuestion.disabled = false;
+            aiSend.disabled = false;
+            aiSend.innerHTML = '<i class="fa-solid fa-paper-plane me-1"></i>Ask';
+            aiQuestion.focus();
+        }
+    });
+
+    document.querySelectorAll('.exam-toggle').forEach((toggle) => {
+        toggle.addEventListener('click', () => toggle.closest('.exam-item').classList.toggle('open'));
+    });
+
+    document.querySelectorAll('[data-ai-action]').forEach((button) => {
+        button.addEventListener('click', () => {
+            const action = button.dataset.aiAction;
+            const subject = document.getElementById('learn-subject').value;
+            const unit = document.getElementById('learn-unit').value;
+            const topic = document.getElementById('learn-topic').value;
+            const prompts = {
+                Learn: `Teach me ${topic} from ${subject}, ${unit}, step by step. Use a simple analogy, a practical example, and explain common mistakes.`,
+                Notes: `Create semester-exam-ready notes for ${topic} from ${subject}, ${unit}. Include definitions, key points, a diagram description, and important questions.`,
+                Practice: `Create 5 multiple-choice questions on ${topic} from ${subject}, ${unit}. Include the correct answer and a short explanation for each.`
+            };
+            aiQuestion.value = prompts[action];
+            aiChatForm.requestSubmit();
+            document.querySelectorAll('[data-ai-action]').forEach((item) => item.classList.toggle('active', item.dataset.aiAction === action));
+            studentPrefs.lastLearningAction = { action, subject, unit, topic };
+            localStorage.setItem('acewStudentPrefs', JSON.stringify(studentPrefs));
+        });
+    });
+
+    const roleRoadmaps = {
+        'Full Stack Java Developer': ['Java & Git', 'Spring Boot', 'Full-stack project', 'Interview practice'],
+        'Data Scientist': ['Python & statistics', 'Pandas & SQL', 'ML portfolio project', 'Model interview practice'],
+        'Cloud Engineer': ['Linux & networking', 'AWS fundamentals', 'Cloud deployment', 'Certification checkpoint'],
+        'DevOps Engineer': ['Git & Linux', 'Docker & CI/CD', 'Kubernetes project', 'Reliability checkpoint'],
+        'AI / ML Engineer': ['Python & maths', 'ML fundamentals', 'Deep learning project', 'Model deployment']
+    };
+
+    const updateRoadmap = (role) => {
+        document.querySelectorAll('.milestone strong').forEach((item, index) => { item.textContent = roleRoadmaps[role][index]; });
+        document.querySelectorAll('.job-row').forEach((job) => { job.hidden = !job.dataset.role.split('|').includes(role); });
+        studentPrefs.careerRole = role;
+        localStorage.setItem('acewStudentPrefs', JSON.stringify(studentPrefs));
+    };
+
+    if (careerRole) {
+        careerRole.value = studentPrefs.careerRole || careerRole.value;
+        updateRoadmap(careerRole.value);
+        careerRole.addEventListener('change', () => updateRoadmap(careerRole.value));
+    }
+
+    document.querySelectorAll('.apply-btn').forEach((button) => {
+        button.addEventListener('click', () => {
+            const count = Number(localStorage.getItem('acewApplications') || '3') + 1;
+            localStorage.setItem('acewApplications', String(count));
+            document.getElementById('application-count').textContent = count;
+            button.textContent = 'Tracked';
+            button.disabled = true;
+        });
+    });
+    const savedApplications = localStorage.getItem('acewApplications');
+    if (savedApplications) document.getElementById('application-count').textContent = savedApplications;
 
     /* =========================
        ADMIN LOGIN
