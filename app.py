@@ -449,6 +449,64 @@ def groq_chat():
         }), 500
 
 
+@app.route('/api/groq-chat', methods=['POST'])
+def groq_chat():
+    if not session.get('is_student') and not session.get('is_admin') and not session.get('is_guest'):
+        return jsonify({"status": "error", "message": "Please sign in to use the AI tutor."}), 401
+
+    data = request.get_json(silent=True) or {}
+    question = str(data.get('question') or '').strip()
+    if not question:
+        return jsonify({"status": "error", "message": "Ask the AI tutor a question first."}), 400
+    if len(question) > 4000:
+        return jsonify({"status": "error", "message": "Please keep your question under 4000 characters."}), 400
+
+    api_key = os.environ.get('GROQ_API_KEY')
+    if not api_key:
+        return jsonify({"status": "error", "message": "GROQ_API_KEY is not configured on the server."}), 503
+
+    context = data.get('context') or {}
+    system_prompt = (
+        "You are ACEW Student Hub AI Tutor. Help a college student clearly and accurately with "
+        "studies, programming, engineering concepts, assignments, projects, careers, interviews, "
+        "internships, and everyday learning questions. Explain step by step, use examples, and say "
+        "when you are uncertain. Do not claim to access private college records. "
+        f"The student's selected study context is subject={context.get('subject', 'general')}, "
+        f"unit={context.get('unit', 'general')}, topic={context.get('topic', 'general')}."
+    )
+    history = data.get('history') if isinstance(data.get('history'), list) else []
+    messages = [{"role": "system", "content": system_prompt}]
+    for item in history[-8:]:
+        if isinstance(item, dict) and item.get('role') in ('user', 'assistant') and item.get('content'):
+            messages.append({"role": item['role'], "content": str(item['content'])[:4000]})
+    messages.append({"role": "user", "content": question})
+
+    payload = json.dumps({
+        "model": "llama-3.1-8b-instant",
+        "messages": messages,
+        "temperature": 0.4,
+        "max_tokens": 1200
+    }).encode('utf-8')
+    req = urllib.request.Request(
+        "https://api.groq.com/openai/v1/chat/completions",
+        data=payload,
+        headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=45) as response:
+            result = json.loads(response.read().decode())
+            answer = result['choices'][0]['message']['content'].strip()
+            return jsonify({"status": "success", "answer": answer})
+    except urllib.error.HTTPError as error:
+        details = error.read().decode('utf-8', errors='replace')
+        return jsonify({"status": "error", "message": f"Groq request failed ({error.code}). {details}"}), error.code
+    except urllib.error.URLError:
+        return jsonify({"status": "error", "message": "Groq is unreachable. Check the server connection."}), 502
+    except (KeyError, IndexError, json.JSONDecodeError):
+        return jsonify({"status": "error", "message": "Groq returned an unexpected response."}), 502
+    except Exception as error:
+        return jsonify({"status": "error", "message": str(error)}), 500
+
 @app.route('/api/groq-generate', methods=['POST'])
 def groq_generate():
     data = request.get_json(silent=True) or {}
