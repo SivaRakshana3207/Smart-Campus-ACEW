@@ -24,8 +24,8 @@
             <h5 class="fw-bold text-acew mb-3"><i class="fa-solid fa-brain me-2"></i>3rd Year Dynamic Subject AI Tutor</h5>
             
             <div class="mb-2">
-                <label class="form-label fw-bold">Groq API Key</label>
-                <input type="password" id="groq_key" class="form-control" placeholder="gsk_..." required>
+                <label class="form-label fw-bold">Groq API Key <span class="text-muted fw-normal">(optional)</span></label>
+                <input type="password" id="groq_key" class="form-control" placeholder="Uses server configuration when blank">
             </div>
             <div class="mb-2">
                 <label class="form-label fw-bold">3rd Year Subject</label>
@@ -67,8 +67,6 @@
     <script>
         async function generateAINotes() {
             const key = document.getElementById('groq_key').value;
-            if(!key) { alert("Please enter your Groq API Key!"); return; }
-
             const btn = document.getElementById('gen-btn');
             const outputDiv = document.getElementById('notes-output');
             const contentDiv = document.getElementById('notes-content');

@@ -83,13 +83,13 @@ def get_db_connection():
 
 @app.route('/')
 def home():
-    if not session.get('is_student') and not session.get('is_admin'):
+    if not session.get('is_student') and not session.get('is_admin') and not session.get('is_guest'):
         return redirect(url_for('login_page'))
     return render_template('index.html')
 
 @app.route('/login')
 def login_page():
-    if session.get('is_student') or session.get('is_admin'):
+    if session.get('is_student') or session.get('is_admin') or session.get('is_guest'):
         return redirect(url_for('home'))
     return render_template('login.html')
 
@@ -147,6 +147,8 @@ def login():
     # Default Admin Credentials
     if data.get('username') == 'admin' and data.get('password') == 'admin123':
         session['is_admin'] = True
+        session.pop('is_student', None)
+        session.pop('is_guest', None)
         return jsonify({"status": "success", "message": "Admin login successful!"})
     return jsonify({"status": "error", "message": "Invalid Credentials!"}), 401
 
@@ -154,12 +156,21 @@ def login():
 def student_login():
     session['is_student'] = True
     session.pop('is_admin', None)
+    session.pop('is_guest', None)
     return jsonify({"status": "success", "message": "Student login successful!"})
+
+@app.route('/api/guest-login', methods=['POST'])
+def guest_login():
+    session['is_guest'] = True
+    session.pop('is_student', None)
+    session.pop('is_admin', None)
+    return jsonify({"status": "success", "message": "Guest access enabled!"})
 
 @app.route('/api/logout', methods=['GET'])
 def logout():
     session.pop('is_admin', None)
     session.pop('is_student', None)
+    session.pop('is_guest', None)
     return jsonify({"status": "success", "message": "Logged out!"})
 
 # --- Announcements DB APIs ---
@@ -277,7 +288,7 @@ def add_marketplace():
 @app.route('/api/groq-generate', methods=['POST'])
 def groq_generate():
     data = request.json
-    api_key = data.get('api_key')
+    api_key = data.get('api_key') or os.environ.get('GROQ_API_KEY')
     if not api_key:
         return jsonify({"status": "error", "message": "Groq API Key is required"}), 400
 
