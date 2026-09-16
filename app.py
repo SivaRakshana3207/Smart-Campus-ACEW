@@ -2,8 +2,15 @@ from flask import Flask, render_template, jsonify, request, session, redirect, u
 import sqlite3
 import datetime
 import urllib.request
+import urllib.error
 import json
 import os
+
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'acew_secret_key_hackathon_2026')
@@ -202,7 +209,7 @@ def add_announcement():
     if not session.get('is_admin'):
         return jsonify({"status": "error", "message": "Unauthorized"}), 403
     
-    data = request.json
+    data = request.get_json(silent=True) or {}
     now = datetime.datetime.now().strftime("%d %b %Y, %I:%M %p")
     conn = get_db_connection()
     conn.execute("INSERT INTO announcements (title, category, msg, created_at) VALUES (?, ?, ?, ?)",
@@ -215,7 +222,7 @@ def add_announcement():
 
 @app.route('/api/outpass/apply', methods=['POST'])
 def apply_outpass():
-    data = request.json
+    data = request.get_json(silent=True) or {}
     conn = get_db_connection()
     count = conn.execute("SELECT COUNT(*) FROM outpasses").fetchone()[0]
     pass_id = f"ACEW-2026-00{count + 1}"
@@ -238,7 +245,7 @@ def get_outpasses():
 
 @app.route('/api/book-slot', methods=['POST'])
 def book_slot():
-    data = request.json
+    data = request.get_json(silent=True) or {}
     conn = get_db_connection()
     count = conn.execute("SELECT COUNT(*) FROM slots").fetchone()[0]
     token = f"SLOT-AC-{count + 101}"
@@ -260,7 +267,7 @@ def get_slots():
 
 @app.route('/api/food/order', methods=['POST'])
 def food_order():
-    data = request.json
+    data = request.get_json(silent=True) or {}
     conn = get_db_connection()
     count = conn.execute("SELECT COUNT(*) FROM food_orders").fetchone()[0]
     order_id = f"FOOD-{count + 501}"
@@ -290,7 +297,7 @@ def get_marketplace():
 
 @app.route('/api/marketplace/add', methods=['POST'])
 def add_marketplace():
-    data = request.json
+    data = request.get_json(silent=True) or {}
     conn = get_db_connection()
     conn.execute("INSERT INTO marketplace (title, category, item_type, price, seller) VALUES (?, ?, ?, ?, ?)",
                  (data['title'], data['category'], data['item_type'], data['price'], data['seller']))
@@ -298,98 +305,256 @@ def add_marketplace():
     conn.close()
     return jsonify({"status": "success", "message": "Listing published!"})
 
-# --- Groq AI Proxy Endpoint ---
-
+# --- OpenAI AI Chatbot ---
 @app.route('/api/groq-chat', methods=['POST'])
 def groq_chat():
+    # User must be logged in.
     if not session.get('is_student') and not session.get('is_admin') and not session.get('is_guest'):
-        return jsonify({"status": "error", "message": "Please sign in to use the AI tutor."}), 401
+        return jsonify({
+            "status": "error",
+            "message": "Please login first to use the AI tutor."
+        }), 401
 
     data = request.get_json(silent=True) or {}
     question = str(data.get('question') or '').strip()
+
     if not question:
-        return jsonify({"status": "error", "message": "Ask the AI tutor a question first."}), 400
+        return jsonify({
+            "status": "error",
+            "message": "Please enter a question."
+        }), 400
+
     if len(question) > 4000:
-        return jsonify({"status": "error", "message": "Please keep your question under 4000 characters."}), 400
+        return jsonify({
+            "status": "error",
+            "message": "Please keep your question under 4000 characters."
+        }), 400
 
-    api_key = os.environ.get('GROQ_API_KEY')
+    api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("OPENAI_API_KEY") or os.environ.get("GROQ_API_KEY")
     if not api_key:
-        return jsonify({"status": "error", "message": "GROQ_API_KEY is not configured on the server."}), 503
+        return jsonify({
+            "status": "error",
+            "message": "GEMINI_API_KEY is not configured. Add it to your .env file."
+        }), 503
 
-    context = data.get('context') or {}
+    model_name = os.environ.get("GEMINI_MODEL") or os.environ.get("OPENAI_MODEL") or os.environ.get("GROQ_MODEL", "gemini-3.6-flash")
+
+    context = data.get('context')
+    if not isinstance(context, dict):
+        context = {}
+
     system_prompt = (
-        "You are ACEW Student Hub AI Tutor. Help a college student clearly and accurately with "
-        "studies, programming, engineering concepts, assignments, projects, careers, interviews, "
-        "internships, and everyday learning questions. Explain step by step, use examples, and say "
-        "when you are uncertain. Do not claim to access private college records. "
-        f"The student's selected study context is subject={context.get('subject', 'general')}, "
-        f"unit={context.get('unit', 'general')}, topic={context.get('topic', 'general')}."
+        "You are ACEW Student Hub AI Tutor. "
+        "Help college students with studies, programming, engineering concepts, "
+        "assignments, projects, careers, interviews, internships, and technical skills. "
+        "Explain step by step in simple beginner-friendly language. "
+        "For programming questions, provide working code and explain it. "
+        "Do not claim to access private college records. "
+        f"Selected subject: {context.get('subject', 'general')}. "
+        f"Selected unit: {context.get('unit', 'general')}. "
+        f"Selected topic: {context.get('topic', 'general')}."
     )
-    history = data.get('history') if isinstance(data.get('history'), list) else []
-    messages = [{"role": "system", "content": system_prompt}]
-    for item in history[-8:]:
-        if isinstance(item, dict) and item.get('role') in ('user', 'assistant') and item.get('content'):
-            messages.append({"role": item['role'], "content": str(item['content'])[:4000]})
-    messages.append({"role": "user", "content": question})
 
-    payload = json.dumps({
-        "model": "llama-3.1-8b-instant",
-        "messages": messages,
-        "temperature": 0.4,
-        "max_tokens": 1200
-    }).encode('utf-8')
+    history = data.get('history')
+    if not isinstance(history, list):
+        history = []
+
+    messages = [{"role": "system", "content": system_prompt}]
+
+    for item in history[-8:]:
+        if (
+            isinstance(item, dict)
+            and item.get('role') in ('user', 'assistant')
+            and item.get('content')
+        ):
+            messages.append({
+                "role": item['role'],
+                "content": str(item['content'])[:4000]
+            })
+
+    messages.append({
+        "role": "user",
+        "content": question
+    })
+
+    gemini_url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={api_key}"
+    gemini_payload = json.dumps({
+        "contents": [{
+            "parts": [{"text": "\n".join(item["content"] for item in messages if isinstance(item, dict) and "content" in item)}]
+        }],
+        "generationConfig": {
+            "temperature": 0.4,
+            "maxOutputTokens": 600
+        }
+    }).encode("utf-8")
+
     req = urllib.request.Request(
-        "https://api.groq.com/openai/v1/chat/completions",
-        data=payload,
-        headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
+        gemini_url,
+        data=gemini_payload,
+        method="POST",
+        headers={
+            "Content-Type": "application/json"
+        }
     )
+
     try:
-        with urllib.request.urlopen(req, timeout=45) as response:
-            result = json.loads(response.read().decode())
-            answer = result['choices'][0]['message']['content'].strip()
-            return jsonify({"status": "success", "answer": answer})
+        with urllib.request.urlopen(req, timeout=30) as response:
+            result = json.loads(response.read().decode("utf-8"))
+
+        candidates = result.get("candidates") or []
+        if not candidates:
+            return jsonify({
+                "status": "error",
+                "message": "Gemini returned no candidates."
+            }), 502
+
+        content = candidates[0].get("content") or {}
+        parts = content.get("parts") or []
+        answer = "".join(part.get("text", "") for part in parts if isinstance(part, dict)).strip()
+
+        if not answer:
+            return jsonify({
+                "status": "error",
+                "message": "Gemini returned an empty answer."
+            }), 502
+
+        return jsonify({
+            "status": "success",
+            "answer": answer
+        })
+
     except urllib.error.HTTPError as error:
-        details = error.read().decode('utf-8', errors='replace')
-        return jsonify({"status": "error", "message": f"Groq request failed ({error.code}). {details}"}), error.code
-    except urllib.error.URLError:
-        return jsonify({"status": "error", "message": "Groq is unreachable. Check the server connection."}), 502
-    except (KeyError, IndexError, json.JSONDecodeError):
-        return jsonify({"status": "error", "message": "Groq returned an unexpected response."}), 502
+        details = error.read().decode("utf-8", errors="replace")
+        return jsonify({
+            "status": "error",
+            "message": f"Gemini API error ({error.code}): {details}"
+        }), error.code
+
+    except urllib.error.URLError as error:
+        return jsonify({
+            "status": "error",
+            "message": f"Cannot connect to Gemini: {error.reason}"
+        }), 502
+
+    except json.JSONDecodeError:
+        return jsonify({
+            "status": "error",
+            "message": "Gemini returned invalid JSON."
+        }), 502
+
     except Exception as error:
-        return jsonify({"status": "error", "message": str(error)}), 500
+        return jsonify({
+            "status": "error",
+            "message": f"Server error: {str(error)}"
+        }), 500
+
 
 @app.route('/api/groq-generate', methods=['POST'])
 def groq_generate():
     data = request.get_json(silent=True) or {}
-    api_key = data.get('api_key') or os.environ.get('GROQ_API_KEY')
+
+    # Prefer the server-side key. Accepting a client key is retained for compatibility
+    # with the existing frontend, but server-side .env is recommended.
+    api_key = os.environ.get('GEMINI_API_KEY') or os.environ.get('OPENAI_API_KEY') or os.environ.get('GROQ_API_KEY') or data.get('api_key')
+
     if not api_key:
-        return jsonify({"status": "error", "message": "Groq API Key is required"}), 400
+        return jsonify({
+            "status": "error",
+            "message": "Gemini API Key is required."
+        }), 400
 
-    prompt = f"Provide detailed engineering study notes for 3rd Year students.\nSubject: {data.get('subject')}\nUnit: {data.get('unit')}\nTopic: {data.get('topic')}\nInclude key concepts and bullet points."
+    prompt = (
+        "Provide detailed engineering study notes for college students.\n"
+        f"Subject: {data.get('subject', 'General')}\n"
+        f"Unit: {data.get('unit', 'General')}\n"
+        f"Topic: {data.get('topic', 'General')}\n"
+        "Include key concepts, simple explanations, examples, and bullet points."
+    )
 
-    payload = json.dumps({
-        "model": "llama-3.1-8b-instant",
-        "messages": [{"role": "user", "content": prompt}],
-        "temperature": 0.5
-    }).encode('utf-8')
+    model_name = os.environ.get('GEMINI_MODEL') or os.environ.get('OPENAI_MODEL') or os.environ.get('GROQ_MODEL', 'gemini-3.6-flash')
+
+    gemini_url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={api_key}"
+    gemini_payload = json.dumps({
+        "contents": [{
+            "parts": [{"text": prompt}]
+        }],
+        "generationConfig": {
+            "temperature": 0.5,
+            "maxOutputTokens": 1600
+        }
+    }).encode("utf-8")
 
     req = urllib.request.Request(
-        "https://api.groq.com/openai/v1/chat/completions",
-        data=payload,
-        headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
+        gemini_url,
+        data=gemini_payload,
+        method="POST",
+        headers={
+            "Content-Type": "application/json"
+        }
     )
 
     try:
-        with urllib.request.urlopen(req, timeout=45) as response:
-            res_data = json.loads(response.read().decode())
-            return jsonify({"status": "success", "notes": res_data['choices'][0]['message']['content']})
+        with urllib.request.urlopen(req, timeout=60) as response:
+            result = json.loads(response.read().decode("utf-8"))
+
+        candidates = result.get("candidates") or []
+        if not candidates:
+            return jsonify({
+                "status": "error",
+                "message": "Gemini returned no candidates."
+            }), 502
+
+        notes = "".join(
+            part.get("text", "")
+            for part in ((candidates[0].get("content") or {}).get("parts") or [])
+            if isinstance(part, dict)
+        ).strip()
+
+        if not notes:
+            return jsonify({
+                "status": "error",
+                "message": "Gemini returned empty notes."
+            }), 502
+
+        return jsonify({
+            "status": "success",
+            "notes": notes
+        })
+
     except urllib.error.HTTPError as error:
-        details = error.read().decode('utf-8', errors='replace')
-        return jsonify({"status": "error", "message": f"Groq request failed ({error.code}). {details}"}), error.code
-    except urllib.error.URLError:
-        return jsonify({"status": "error", "message": "Groq is unreachable. Check your internet connection and GROQ_API_KEY."}), 502
-    except Exception as e:
-        return jsonify({"status": "error", "message": str(e)}), 500
+        details = error.read().decode("utf-8", errors="replace")
+        return jsonify({
+            "status": "error",
+            "message": f"Gemini API error ({error.code}): {details}"
+        }), error.code
+
+    except urllib.error.URLError as error:
+        return jsonify({
+            "status": "error",
+            "message": f"Cannot connect to Gemini: {error.reason}"
+        }), 502
+
+    except json.JSONDecodeError:
+        return jsonify({
+            "status": "error",
+            "message": "Gemini returned invalid JSON."
+        }), 502
+
+    except Exception as error:
+        return jsonify({
+            "status": "error",
+            "message": f"Server error: {str(error)}"
+        }), 500
+
+
+@app.route('/api/health', methods=['GET'])
+def health():
+    return jsonify({
+        "status": "success",
+        "message": "ACEW Student Hub backend is running.",
+        "gemini_configured": bool(os.environ.get("GEMINI_API_KEY") or os.environ.get("OPENAI_API_KEY") or os.environ.get("GROQ_API_KEY"))
+    })
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
