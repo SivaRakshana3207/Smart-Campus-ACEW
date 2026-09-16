@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Marketplace - ACEW</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>:root { --acew-maroon: #6b1d5c; } .bg-acew { background-color: var(--acew-maroon); }</style>
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-dark bg-acew mb-3">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/"><i class="fa-solid fa-arrow-left me-2"></i>Campus Marketplace & Peer Lending</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Post New Listing Button / Modal Trigger -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold text-acew m-0"><i class="fa-solid fa-boxes-packing me-2"></i>Books, Drafters & Components</h5>
+            <button class="btn btn-success fw-bold btn-sm" data-bs-toggle="modal" data-bs-target="#postItemModal">
+                <i class="fa-solid fa-plus me-1"></i> Post Item
+            </button>
+        </div>
+
+        <!-- Items Listing Grid -->
+        <div class="row g-3" id="marketplace-grid">
+            <!-- Dynamically Loaded -->
+        </div>
+    </div>
+
+    <!-- Modal for Posting New Item -->
+    <div class="modal fade" id="postItemModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-acew text-white">
+                    <h5 class="modal-title fw-bold">List an Item for Sale / Lend</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="marketplace-form">
+                        <div class="mb-2">
+                            <label class="form-label fw-bold">Item Title</label>
+                            <input type="text" id="item_title" class="form-control" required placeholder="e.g. ECE Microprocessor Kit">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label fw-bold">Category</label>
+                            <select id="item_cat" class="form-select">
+                                <option>Textbooks & Notes</option>
+                                <option>Lab Tools & Drafters</option>
+                                <option>Electronics & IoT Components</option>
+                                <option>Hostel Essentials</option>
+                            </select>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label fw-bold">Listing Type</label>
+                            <select id="item_type" class="form-select">
+                                <option value="Sell">Sell</option>
+                                <option value="Lend">Lend / Share</option>
+                            </select>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label fw-bold">Price / Terms</label>
+                            <input type="text" id="item_price" class="form-control" required placeholder="e.g. ₹200 or Free for 1 week">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Your Name & Hostel Block / Dept</label>
+                            <input type="text" id="item_seller" class="form-control" required placeholder="e.g. S. Meena (3rd Year CSE, Hostel A)">
+                        </div>
+                        <button type="submit" class="btn btn-primary fw-bold w-100">Publish Listing</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Fetch and display listed marketplace items
+        async function loadMarketplace() {
+            const res = await fetch('/api/marketplace/list');
+            const data = await res.json();
+            const grid = document.getElementById('marketplace-grid');
+
+            grid.innerHTML = data.data.map(item => `
+                <div class="col-12 col-md-6">
+                    <div class="card p-3 shadow-sm border-0 h-100">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h6 class="fw-bold text-dark mb-0">${item.title}</h6>
+                            <span class="badge ${item.type === 'Sell' ? 'bg-success' : 'bg-info text-dark'}">${item.type}</span>
+                        </div>
+                        <p class="text-muted small mb-2"><i class="fa-solid fa-tag me-1"></i> ${item.category}</p>
+                        <div class="p-2 bg-light rounded mb-2">
+                            <strong class="text-danger">${item.price}</strong>
+                        </div>
+                        <div class="small text-muted">
+                            <i class="fa-solid fa-user me-1"></i> ${item.seller}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Form Submit Handler
+        document.getElementById('marketplace-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const body = {
+                title: document.getElementById('item_title').value,
+                category: document.getElementById('item_cat').value,
+                type: document.getElementById('item_type').value,
+                price: document.getElementById('item_price').value,
+                seller: document.getElementById('item_seller').value
+            };
+
+            const res = await fetch('/api/marketplace/add', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(body)
+            });
+            const data = await res.json();
+            alert(data.message);
+            bootstrap.Modal.getInstance(document.getElementById('postItemModal')).hide();
+            loadMarketplace();
+        });
+
+        loadMarketplace();
+    </script>
+</body>
+</html>

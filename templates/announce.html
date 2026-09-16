@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Announcements - ACEW</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>:root { --acew-maroon: #6b1d5c; } .bg-acew { background-color: var(--acew-maroon); } .bottom-nav { display: none; } @media (max-width: 768px) { body { padding-bottom: 82px; } .bottom-nav { display: flex; position: fixed; z-index: 1000; bottom: 0; left: 0; right: 0; height: 70px; background: rgba(255,255,255,.94); backdrop-filter: blur(18px); border-top: 1px solid #eeeaf0; align-items: center; justify-content: space-around; padding: 5px 10px; } .bottom-item { flex: 1; height: 58px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #8d8790; font-size: 9px; font-weight: 700; text-decoration: none; } .bottom-item i { font-size: 17px; } .bottom-item.active { color: var(--acew-maroon); } .bottom-sos { width: 48px; height: 48px; margin-top: -22px; border-radius: 50%; background: #e53935; color: white; display: flex; align-items: center; justify-content: center; border: 5px solid #f7f7fa; box-shadow: 0 7px 20px rgba(229,57,53,.3); font-size: 17px; } }</style>
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-dark bg-acew mb-3">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/"><i class="fa-solid fa-arrow-left me-2"></i>Campus Announcements</a>
+        </div>
+    </nav>
+    <div class="container" id="announcement-container">
+        <!-- DB Items Rendered Here -->
+    </div>
+
+    <script>
+        async function loadAnnouncements() {
+            const res = await fetch('/api/announcements');
+            const data = await res.json();
+            const container = document.getElementById('announcement-container');
+
+            if(data.data.length === 0) {
+                container.innerHTML = `<p class="text-center text-muted">No announcements posted yet.</p>`;
+                return;
+            }
+
+            container.innerHTML = data.data.map(item => `
+                <div class="card p-3 shadow-sm border-0 mb-3 border-start border-4 border-warning">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <h6 class="fw-bold text-acew mb-0"><i class="fa-solid fa-bullhorn me-2"></i>${item.title}</h6>
+                        <span class="badge bg-warning text-dark">${item.category}</span>
+                    </div>
+                    <p class="small text-dark mb-1">${item.msg}</p>
+                    <small class="text-muted"><i class="fa-solid fa-clock me-1"></i> Posted on: ${item.created_at}</small>
+                </div>
+            `).join('');
+        }
+        loadAnnouncements();
+    </script>
+    <nav class="bottom-nav"><a href="/" class="bottom-item"><i class="fa-solid fa-house"></i>Home</a><a href="/announce" class="bottom-item active"><i class="fa-solid fa-bullhorn"></i>Updates</a><a href="/sos" class="bottom-item"><span class="bottom-sos"><i class="fa-solid fa-shield-halved"></i></span>SOS</a><a href="/virtual" class="bottom-item"><i class="fa-solid fa-location-arrow"></i>Navigate</a><a href="/ai-notes" class="bottom-item"><i class="fa-solid fa-brain"></i>AI</a></nav>
+</body>
+</html>

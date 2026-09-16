@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wheelchair Routes - ACEW</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>:root { --acew-maroon: #6b1d5c; } .bg-acew { background-color: var(--acew-maroon); }</style>
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-dark bg-acew mb-3">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/"><i class="fa-solid fa-arrow-left me-2"></i>Wheelchair Accessibility Routes</a>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="card p-3 shadow-sm border-0 mb-3">
+            <h5 class="fw-bold text-acew"><i class="fa-solid fa-universal-access me-2"></i>Barrier-Free Ramp & Elevator Navigator</h5>
+            <p class="text-muted small">Select your starting block and destination to get wheelchair ramp and elevator pathways.</p>
+
+            <div class="mb-3">
+                <label class="fw-bold">From Location</label>
+                <select class="form-select">
+                    <option>Main Entrance / Security Gate</option>
+                    <option>Seetha Lakshmi Hostel Block A</option>
+                    <option>Admin & Principal Office Block</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="fw-bold">To Destination</label>
+                <select class="form-select">
+                    <option>AI & DS Compute Lab (Ground Floor)</option>
+                    <option>Dr. T. Krishnaswamy Auditorium (Elevator Access)</option>
+                    <option>Campus Cafeteria (Ramp Entrance)</option>
+                </select>
+            </div>
+            <button class="btn btn-success fw-bold w-100" onclick="alert('Accessible Path Found: Take South Ramp -> Main Block Lift -> Exit Corridor 2')"><i class="fa-solid fa-route me-1"></i> Get Barrier-Free Route</button>
+        </div>
+    </div>
+</body>
+</html>

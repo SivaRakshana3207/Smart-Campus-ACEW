@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Groq AI Notes Bot - ACEW</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>:root { --acew-maroon: #6b1d5c; } .bg-acew { background-color: var(--acew-maroon); } .bottom-nav { display: none; } @media (max-width: 768px) { body { padding-bottom: 82px; } .bottom-nav { display: flex; position: fixed; z-index: 1000; bottom: 0; left: 0; right: 0; height: 70px; background: rgba(255,255,255,.94); backdrop-filter: blur(18px); border-top: 1px solid #eeeaf0; align-items: center; justify-content: space-around; padding: 5px 10px; } .bottom-item { flex: 1; height: 58px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #8d8790; font-size: 9px; font-weight: 700; text-decoration: none; } .bottom-item i { font-size: 17px; } .bottom-item.active { color: var(--acew-maroon); } .bottom-sos { width: 48px; height: 48px; margin-top: -22px; border-radius: 50%; background: #e53935; color: white; display: flex; align-items: center; justify-content: center; border: 5px solid #f7f7fa; box-shadow: 0 7px 20px rgba(229,57,53,.3); font-size: 17px; } }</style>
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-dark bg-acew mb-3">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/"><i class="fa-solid fa-arrow-left me-2"></i>Groq AI Academic Bot</a>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="card p-3 shadow-sm border-0 mb-3">
+            <h5 class="fw-bold text-acew mb-3"><i class="fa-solid fa-brain me-2"></i>3rd Year Dynamic Subject AI Tutor</h5>
+            
+            <div class="mb-2">
+                <label class="form-label fw-bold">Groq API Key</label>
+                <input type="password" id="groq_key" class="form-control" placeholder="gsk_..." required>
+            </div>
+            <div class="mb-2">
+                <label class="form-label fw-bold">3rd Year Subject</label>
+                <select id="subject" class="form-select">
+                    <option value="Artificial Intelligence & Neural Networks">Artificial Intelligence & Neural Networks</option>
+                    <option value="Database Management Systems">Database Management Systems</option>
+                    <option value="Computer Networks">Computer Networks</option>
+                    <option value="Design and Analysis of Algorithms">Design and Analysis of Algorithms</option>
+                </select>
+            </div>
+            <div class="mb-2">
+                <label class="form-label fw-bold">Select Unit</label>
+                <select id="unit" class="form-select">
+                    <option value="Unit 1: Fundamentals & Search Algorithms">Unit 1: Fundamentals & Search Algorithms</option>
+                    <option value="Unit 2: Knowledge Representation">Unit 2: Knowledge Representation</option>
+                    <option value="Unit 3: Deep Learning & Neural Nets">Unit 3: Deep Learning & Neural Nets</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-bold">Select Topic</label>
+                <select id="topic" class="form-select">
+                    <option value="A* Search Algorithm and Heuristics">A* Search Algorithm and Heuristics</option>
+                    <option value="Backpropagation in Neural Networks">Backpropagation in Neural Networks</option>
+                    <option value="Convolutional Neural Networks (CNN)">Convolutional Neural Networks (CNN)</option>
+                </select>
+            </div>
+
+            <button class="btn btn-warning fw-bold text-dark w-100" id="gen-btn" onclick="generateAINotes()">
+                <i class="fa-solid fa-bolt me-1"></i> Generate AI Notes & Summary
+            </button>
+        </div>
+
+        <div id="notes-output" class="card p-3 shadow-sm border-0 d-none">
+            <h6 class="fw-bold text-acew border-bottom pb-2"><i class="fa-solid fa-book-open me-2"></i>Generated Notes & Explanation</h6>
+            <div id="notes-content" style="white-space: pre-wrap; font-size: 0.95rem;"></div>
+        </div>
+    </div>
+
+    <script>
+        async function generateAINotes() {
+            const key = document.getElementById('groq_key').value;
+            if(!key) { alert("Please enter your Groq API Key!"); return; }
+
+            const btn = document.getElementById('gen-btn');
+            const outputDiv = document.getElementById('notes-output');
+            const contentDiv = document.getElementById('notes-content');
+
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin me-1"></i> Generating Notes via Groq...`;
+
+            try {
+                const res = await fetch('/api/groq-generate', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        api_key: key,
+                        subject: document.getElementById('subject').value,
+                        unit: document.getElementById('unit').value,
+                        topic: document.getElementById('topic').value
+                    })
+                });
+                const data = await res.json();
+                if(data.status === 'success') {
+                    outputDiv.classList.remove('d-none');
+                    contentDiv.innerText = data.notes;
+                } else {
+                    alert(`Error: ${data.message}`);
+                }
+            } catch(e) {
+                alert("Failed to connect to backend server!");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-bolt me-1"></i> Generate AI Notes & Summary`;
+            }
+        }
+    </script>
+    <nav class="bottom-nav">
+        <a href="/" class="bottom-item"><i class="fa-solid fa-house"></i>Home</a><a href="/announce" class="bottom-item"><i class="fa-solid fa-bullhorn"></i>Updates</a><a href="/sos" class="bottom-item"><span class="bottom-sos"><i class="fa-solid fa-shield-halved"></i></span>SOS</a><a href="/virtual" class="bottom-item"><i class="fa-solid fa-location-arrow"></i>Navigate</a><a href="/ai-notes" class="bottom-item active"><i class="fa-solid fa-brain"></i>AI</a>
+    </nav>
+</body>
+</html>

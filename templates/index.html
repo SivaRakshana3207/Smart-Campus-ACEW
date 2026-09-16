@@ -1,0 +1,1593 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>ACEW Smart Campus</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <style>
+
+        :root {
+            --primary: #6b1d5c;
+            --primary-dark: #48113e;
+            --primary-light: #f7e8f4;
+            --accent: #f3b33d;
+            --bg: #f7f7fa;
+            --card: #ffffff;
+            --text: #1d1b20;
+            --muted: #77727b;
+            --danger: #e53935;
+            --success: #19a974;
+            --border: #eeeaf0;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            background:
+                radial-gradient(circle at 10% 0%, rgba(107,29,92,.07), transparent 25%),
+                var(--bg);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--text);
+            padding-bottom: 90px;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        /* =========================
+           NAVBAR
+        ========================= */
+
+        .navbar {
+            background: rgba(107,29,92,.96);
+            backdrop-filter: blur(18px);
+            border-bottom: 1px solid rgba(255,255,255,.1);
+            height: 68px;
+        }
+
+        .navbar-brand {
+            font-size: 17px;
+            letter-spacing: -.3px;
+        }
+
+        .brand-icon {
+            width: 38px;
+            height: 38px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,.14);
+            border-radius: 12px;
+            margin-right: 8px;
+        }
+
+        .nav-link {
+            font-size: 13px;
+            font-weight: 600;
+            color: rgba(255,255,255,.82) !important;
+        }
+
+        .nav-link:hover {
+            color: white !important;
+        }
+
+        /* =========================
+           MAIN
+        ========================= */
+
+        .main-container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 24px 20px;
+        }
+
+        /* =========================
+           HERO
+        ========================= */
+
+        .hero {
+            position: relative;
+            overflow: hidden;
+            background:
+                linear-gradient(135deg, #6b1d5c 0%, #48113e 100%);
+            border-radius: 28px;
+            padding: 30px;
+            color: white;
+            margin-bottom: 22px;
+            box-shadow: 0 18px 45px rgba(107,29,92,.22);
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            width: 240px;
+            height: 240px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.07);
+            right: -70px;
+            top: -90px;
+        }
+
+        .hero::after {
+            content: "";
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: rgba(243,179,61,.08);
+            right: 80px;
+            bottom: -100px;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 7px 12px;
+            border-radius: 50px;
+            background: rgba(255,255,255,.12);
+            border: 1px solid rgba(255,255,255,.13);
+            font-size: 11px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .hero h1 {
+            font-size: clamp(25px, 4vw, 38px);
+            line-height: 1.15;
+            font-weight: 800;
+            letter-spacing: -1.2px;
+            margin-bottom: 10px;
+        }
+
+        .hero p {
+            color: rgba(255,255,255,.72);
+            max-width: 580px;
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .hero-btn {
+            border: none;
+            border-radius: 13px;
+            padding: 11px 17px;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .hero-btn.primary {
+            background: white;
+            color: var(--primary);
+        }
+
+        .hero-btn.secondary {
+            background: rgba(255,255,255,.12);
+            color: white;
+            border: 1px solid rgba(255,255,255,.15);
+        }
+
+        /* =========================
+           VOICE ASSISTANT
+        ========================= */
+
+        .voice-card {
+            position: relative;
+            overflow: hidden;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 22px;
+            padding: 18px;
+            margin-bottom: 28px;
+            box-shadow: 0 8px 28px rgba(20,10,20,.05);
+        }
+
+        .voice-card-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .voice-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .voice-icon {
+            width: 52px;
+            height: 52px;
+            flex-shrink: 0;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            background: linear-gradient(135deg, #6b1d5c, #92247d);
+            box-shadow: 0 8px 20px rgba(107,29,92,.2);
+        }
+
+        .voice-title {
+            font-weight: 800;
+            font-size: 14px;
+            margin-bottom: 3px;
+        }
+
+        .voice-subtitle {
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .voice-btn {
+            border: none;
+            background: var(--primary);
+            color: white;
+            padding: 11px 18px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 800;
+            white-space: nowrap;
+            transition: .25s;
+        }
+
+        .voice-btn:hover {
+            transform: translateY(-2px);
+            background: var(--primary-dark);
+        }
+
+        .voice-btn.listening {
+            background: var(--danger);
+            animation: pulse 1.2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(229,57,53,.35);
+            }
+
+            70% {
+                box-shadow: 0 0 0 14px rgba(229,57,53,0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(229,57,53,0);
+            }
+        }
+
+        #speech-status {
+            color: var(--primary);
+            font-size: 11px;
+            font-weight: 700;
+            margin-top: 10px;
+        }
+
+        /* =========================
+           SECTION HEADER
+        ========================= */
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: -.5px;
+            margin: 0;
+        }
+
+        .section-title span {
+            color: var(--primary);
+        }
+
+        .section-link {
+            color: var(--primary);
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        /* =========================
+           SERVICE GRID
+        ========================= */
+
+        .service-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+        }
+
+        .service-card {
+            position: relative;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 19px;
+            padding: 18px 15px;
+            min-height: 145px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+            transition: .25s ease;
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(107,29,92,.15);
+            box-shadow: 0 15px 35px rgba(50,20,50,.09);
+        }
+
+        .service-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary-light);
+            color: var(--primary);
+            font-size: 18px;
+            margin-bottom: 18px;
+        }
+
+        .service-card h6 {
+            font-size: 12px;
+            font-weight: 800;
+            margin: 0;
+            color: var(--text);
+        }
+
+        .service-card small {
+            display: block;
+            margin-top: 5px;
+            color: var(--muted);
+            font-size: 9px;
+        }
+
+        .service-arrow {
+            position: absolute;
+            right: 13px;
+            top: 14px;
+            color: #c5bec7;
+            font-size: 10px;
+        }
+
+        /* AI CARD */
+
+        .ai-card {
+            background:
+                linear-gradient(135deg, #fff8dd, #ffffff);
+            border: 1px solid #f3df9d;
+        }
+
+        .ai-card .service-icon {
+            background: #29231b;
+            color: #f5c94a;
+        }
+
+        /* SOS CARD */
+
+        .sos-card {
+            background: linear-gradient(135deg, #e53935, #b71c1c);
+            border: none;
+            color: white;
+        }
+
+        .sos-card h6,
+        .sos-card small {
+            color: white;
+        }
+
+        .sos-card small {
+            opacity: .75;
+        }
+
+        .sos-card .service-icon {
+            background: white;
+            color: #d32f2f;
+        }
+
+        .sos-card .service-arrow {
+            color: rgba(255,255,255,.6);
+        }
+
+        /* =========================
+           QUICK STATS
+        ========================= */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin-top: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 17px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: var(--primary-light);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-card strong {
+            display: block;
+            font-size: 14px;
+        }
+
+        .stat-card span {
+            color: var(--muted);
+            font-size: 9px;
+        }
+
+        /* =========================
+           MOBILE BOTTOM NAV
+        ========================= */
+
+        .bottom-nav {
+            display: none;
+        }
+
+        /* =========================
+           LOGIN MODAL
+        ========================= */
+
+        .modal-content {
+            border: none;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 25px 70px rgba(0,0,0,.2);
+        }
+
+        .login-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 24px;
+        }
+
+        .login-header-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 15px;
+            background: rgba(255,255,255,.12);
+            margin-bottom: 12px;
+        }
+
+        .login-header h5 {
+            font-weight: 800;
+            margin: 0;
+        }
+
+        .login-body {
+            padding: 24px;
+        }
+
+        .form-control {
+            border-radius: 12px;
+            padding: 12px 14px;
+            border: 1px solid #e4dfe5;
+            font-size: 13px;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(107,29,92,.08);
+        }
+
+        .login-btn {
+            background: var(--primary);
+            border: none;
+            border-radius: 12px;
+            padding: 12px;
+            font-weight: 800;
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 992px) {
+
+            .service-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+        }
+
+        @media (max-width: 768px) {
+
+            body {
+                padding-bottom: 82px;
+            }
+
+            .navbar {
+                height: 62px;
+            }
+
+            .main-container {
+                padding: 14px 13px;
+            }
+
+            .hero {
+                border-radius: 23px;
+                padding: 23px 20px;
+                margin-bottom: 14px;
+            }
+
+            .hero h1 {
+                font-size: 26px;
+            }
+
+            .hero p {
+                font-size: 11px;
+                line-height: 1.6;
+            }
+
+            .hero-btn {
+                padding: 10px 14px;
+                font-size: 11px;
+            }
+
+            .voice-card {
+                border-radius: 19px;
+                padding: 14px;
+                margin-bottom: 20px;
+            }
+
+            .voice-card-inner {
+                align-items: flex-start;
+            }
+
+            .voice-left {
+                gap: 10px;
+            }
+
+            .voice-icon {
+                width: 44px;
+                height: 44px;
+                border-radius: 13px;
+            }
+
+            .voice-title {
+                font-size: 12px;
+            }
+
+            .voice-subtitle {
+                font-size: 9px;
+            }
+
+            .voice-btn {
+                padding: 10px 12px;
+                font-size: 10px;
+            }
+
+            .section-title {
+                font-size: 16px;
+            }
+
+            .service-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+
+            .service-card {
+                min-height: 128px;
+                padding: 14px;
+                border-radius: 17px;
+            }
+
+            .service-icon {
+                width: 42px;
+                height: 42px;
+                border-radius: 13px;
+                font-size: 15px;
+                margin-bottom: 12px;
+            }
+
+            .service-card h6 {
+                font-size: 11px;
+            }
+
+            .service-card small {
+                font-size: 8px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+                gap: 9px;
+            }
+
+            .bottom-nav {
+                display: flex;
+                position: fixed;
+                z-index: 1000;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 70px;
+                background: rgba(255,255,255,.94);
+                backdrop-filter: blur(18px);
+                border-top: 1px solid var(--border);
+                align-items: center;
+                justify-content: space-around;
+                padding: 5px 10px;
+            }
+
+            .bottom-item {
+                flex: 1;
+                height: 58px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 4px;
+                color: #8d8790;
+                font-size: 9px;
+                font-weight: 700;
+            }
+
+            .bottom-item i {
+                font-size: 17px;
+            }
+
+            .bottom-item.active {
+                color: var(--primary);
+            }
+
+            .bottom-sos {
+                width: 48px;
+                height: 48px;
+                margin-top: -22px;
+                border-radius: 50%;
+                background: var(--danger);
+                color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: 5px solid var(--bg);
+                box-shadow: 0 7px 20px rgba(229,57,53,.3);
+                font-size: 17px;
+            }
+
+            .desktop-admin {
+                display: none !important;
+            }
+
+        }
+
+        @media (max-width: 380px) {
+
+            .hero h1 {
+                font-size: 23px;
+            }
+
+            .service-card {
+                min-height: 120px;
+            }
+
+            .service-card h6 {
+                font-size: 10px;
+            }
+
+        }
+
+    </style>
+</head>
+
+<body>
+
+<!-- =========================
+     NAVBAR
+========================= -->
+
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+
+    <div class="container">
+
+        <a class="navbar-brand fw-bold d-flex align-items-center" href="/">
+
+            <span class="brand-icon">
+                <i class="fa-solid fa-graduation-cap"></i>
+            </span>
+
+            ACEW Smart Campus
+
+        </a>
+
+        <div class="ms-auto d-flex align-items-center gap-2">
+
+            <a href="/announce"
+               class="btn btn-sm btn-link text-white d-none d-md-block">
+                <i class="fa-solid fa-bullhorn me-1"></i>
+                Announcements
+            </a>
+
+            {% if session.get('is_admin') %}
+
+                <a href="/admin"
+                   class="btn btn-warning btn-sm fw-bold desktop-admin">
+                    <i class="fa-solid fa-user-shield me-1"></i>
+                    Admin
+                </a>
+
+                <button onclick="logout()"
+                        class="btn btn-outline-light btn-sm desktop-admin">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
+
+            {% else %}
+
+                <button class="btn btn-light btn-sm fw-bold text-acew"
+                        data-bs-toggle="modal"
+                        data-bs-target="#loginModal">
+
+                    <i class="fa-solid fa-lock me-1"></i>
+                    <span class="d-none d-sm-inline">Admin</span>
+
+                </button>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</nav>
+
+
+<!-- =========================
+     MAIN
+========================= -->
+
+<main class="main-container">
+
+
+    <!-- HERO -->
+
+    <section class="hero">
+
+        <div class="hero-content">
+
+            <div class="hero-badge">
+
+                <i class="fa-solid fa-circle-check"></i>
+
+                SMART CAMPUS PLATFORM
+
+            </div>
+
+            <h1>
+                Everything you need,
+                <br>
+                right on campus.
+            </h1>
+
+            <p>
+                Access campus services, AI assistance, transportation,
+                accessibility tools, announcements and student facilities
+                from one intelligent platform.
+            </p>
+
+            <div class="hero-actions">
+
+                <a href="/virtual"
+                   class="hero-btn primary">
+
+                    <i class="fa-solid fa-location-arrow me-1"></i>
+
+                    Explore Campus
+
+                </a>
+
+                <a href="/announce"
+                   class="hero-btn secondary">
+
+                    <i class="fa-solid fa-bell me-1"></i>
+
+                    Latest Updates
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- VOICE ASSISTANT -->
+
+    <section class="voice-card">
+
+        <div class="voice-card-inner">
+
+            <div class="voice-left">
+
+                <div class="voice-icon">
+
+                    <i class="fa-solid fa-microphone"></i>
+
+                </div>
+
+                <div>
+
+                    <div class="voice-title">
+                        AccessPathAI Assistant
+                    </div>
+
+                    <div class="voice-subtitle">
+                        Say "Open Bus Routes", "Food Court",
+                        "Outpass" or "Announcements"
+                    </div>
+
+                </div>
+
+            </div>
+
+            <button class="voice-btn"
+                    id="voice-btn">
+
+                <i class="fa-solid fa-microphone me-1"></i>
+
+                Speak
+
+            </button>
+
+        </div>
+
+        <div id="speech-status"></div>
+
+    </section>
+
+
+    <!-- SERVICES -->
+
+    <div class="section-header">
+
+        <h2 class="section-title">
+            Campus <span>Services</span>
+        </h2>
+
+        <span class="section-link">
+            12 SERVICES
+        </span>
+
+    </div>
+
+
+    <section class="service-grid">
+
+
+        <!-- SHUTTLE -->
+
+        <a href="/shuttle" class="service-card">
+
+            <i class="fa-solid fa-chevron-right service-arrow"></i>
+
+            <div class="service-icon">
+                <i class="fa-solid fa-van-shuttle"></i>
+            </div>
+
+            <div>
+                <h6>Campus Shuttle</h6>
+                <small>Track campus transport</small>
+            </div>
+
+        </a>
+
+
+        <!-- VISUAL AI -->
+
+        <a href="/virtual" class="service-card">
+
+            <i class="fa-solid fa-chevron-right service-arrow"></i>
+
+            <div class="service-icon">
+                <i class="fa-solid fa-eye"></i>
+            </div>
+
+            <div>
+                <h6>Visual AI Guidance</h6>
+                <small>Smart navigation assistance</small>
+            </div>
+
+        </a>
+
+
+        <!-- WHEELCHAIR -->
+
+        <a href="/wheelchair" class="service-card">
+
+            <i class="fa-solid fa-chevron-right service-arrow"></i>
+
+            <div class="service-icon">
+                <i class="fa-solid fa-wheelchair"></i>
+            </div>
+
+            <div>
+                <h6>Wheelchair Routes</h6>
+                <small>Accessible campus paths</small>
+            </div>
+
+        </a>
+
+
+        <!-- BUS -->
+
+        <a href="/bus" class="service-card">
+
+            <i class="fa-solid fa-chevron-right service-arrow"></i>
+
+            <div class="service-icon">
+                <i class="fa-solid fa-bus"></i>
+            </div>
+
+            <div>
+                <h6>College Bus</h6>
+                <small>Routes & timings</small>
+            </div>
+
+        </a>
+
+
+        <!-- OUTPASS -->
+
+        <a href="/outpass" class="service-card">
+
+            <i class="fa-solid fa-chevron-right service-arrow"></i>
+
+            <div class="service-icon">
+                <i class="fa-solid fa-id-card"></i>
+            </div>
+
+            <div>
+                <h6>Hostel Outpass</h6>
+                <small>Apply & manage outpass</small>
+            </div>
+
+        </a>
+
+
+        <!-- SLOT -->
+
+        <a href="/slot" class="service-card">
+
+            <i class="fa-solid fa-chevron-right service-arrow"></i>
+
+            <div class="service-icon">
+                <i class="fa-solid fa-clock"></i>
+            </div>
+
+            <div>
+                <h6>Cash Counter</h6>
+                <small>Reserve your slot</small>
+            </div>
+
+        </a>
+
+
+        <!-- FOOD -->
+
+        <a href="/food" class="service-card">
+
+            <i class="fa-solid fa-chevron-right service-arrow"></i>
+
+            <div class="service-icon">
+                <i class="fa-solid fa-utensils"></i>
+            </div>
+
+            <div>
+                <h6>Food Pre-order</h6>
+                <small>Skip the queue</small>
+            </div>
+
+        </a>
+
+
+        <!-- ANNOUNCEMENTS -->
+
+        <a href="/announce" class="service-card">
+
+            <i class="fa-solid fa-chevron-right service-arrow"></i>
+
+            <div class="service-icon">
+                <i class="fa-solid fa-bullhorn"></i>
+            </div>
+
+            <div>
+                <h6>Announcements</h6>
+                <small>Campus updates</small>
+            </div>
+
+        </a>
+
+
+        <!-- ATTENDANCE -->
+
+        <a href="/attendance" class="service-card">
+
+            <i class="fa-solid fa-chevron-right service-arrow"></i>
+
+            <div class="service-icon">
+                <i class="fa-solid fa-clipboard-user"></i>
+            </div>
+
+            <div>
+                <h6>Attendance</h6>
+                <small>Track your attendance</small>
+            </div>
+
+        </a>
+
+
+        <!-- AI NOTES -->
+
+        <a href="/ai-notes" class="service-card ai-card">
+
+            <i class="fa-solid fa-chevron-right service-arrow"></i>
+
+            <div class="service-icon">
+                <i class="fa-solid fa-brain"></i>
+            </div>
+
+            <div>
+                <h6>Groq AI Notes</h6>
+                <small>AI-powered study assistant</small>
+            </div>
+
+        </a>
+
+
+        <!-- MARKETPLACE -->
+
+        <a href="/marketplace" class="service-card">
+
+            <i class="fa-solid fa-chevron-right service-arrow"></i>
+
+            <div class="service-icon">
+                <i class="fa-solid fa-store"></i>
+            </div>
+
+            <div>
+                <h6>Peer Marketplace</h6>
+                <small>Buy & sell with students</small>
+            </div>
+
+        </a>
+
+
+        <!-- SOS -->
+
+        <a href="/sos" class="service-card sos-card">
+
+            <i class="fa-solid fa-chevron-right service-arrow"></i>
+
+            <div class="service-icon">
+                <i class="fa-solid fa-shield-halved"></i>
+            </div>
+
+            <div>
+                <h6>Women Safety SOS</h6>
+                <small>Emergency assistance</small>
+            </div>
+
+        </a>
+
+    </section>
+
+
+    <!-- QUICK INFO -->
+
+    <section class="stats">
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                <i class="fa-solid fa-compass"></i>
+            </div>
+
+            <div>
+                <strong>Smart Navigation</strong>
+                <span>AI-powered campus guidance</span>
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                <i class="fa-solid fa-universal-access"></i>
+            </div>
+
+            <div>
+                <strong>Accessible Campus</strong>
+                <span>Routes designed for everyone</span>
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                <i class="fa-solid fa-robot"></i>
+            </div>
+
+            <div>
+                <strong>AI Assistance</strong>
+                <span>Intelligent student support</span>
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- =========================
+     MOBILE BOTTOM NAV
+========================= -->
+
+<nav class="bottom-nav">
+
+    <a href="/" class="bottom-item active">
+
+        <i class="fa-solid fa-house"></i>
+
+        Home
+
+    </a>
+
+
+    <a href="/announce" class="bottom-item">
+
+        <i class="fa-solid fa-bullhorn"></i>
+
+        Updates
+
+    </a>
+
+
+    <a href="/sos"
+       class="bottom-item">
+
+        <span class="bottom-sos">
+
+            <i class="fa-solid fa-shield-halved"></i>
+
+        </span>
+
+        SOS
+
+    </a>
+
+
+    <a href="/virtual" class="bottom-item">
+
+        <i class="fa-solid fa-location-arrow"></i>
+
+        Navigate
+
+    </a>
+
+
+    <a href="/ai-notes" class="bottom-item">
+
+        <i class="fa-solid fa-brain"></i>
+
+        AI
+
+    </a>
+
+</nav>
+
+
+<!-- =========================
+     ADMIN LOGIN
+========================= -->
+
+<div class="modal fade"
+     id="loginModal"
+     tabindex="-1">
+
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <div class="login-header">
+
+                <div class="login-header-icon">
+
+                    <i class="fa-solid fa-user-shield"></i>
+
+                </div>
+
+                <h5>
+                    Admin Portal
+                </h5>
+
+                <small style="opacity:.7">
+                    Authorized campus administration only
+                </small>
+
+            </div>
+
+
+            <div class="login-body">
+
+                <form id="login-form">
+
+                    <div class="mb-3">
+
+                        <label class="form-label fw-bold small">
+                            Username
+                        </label>
+
+                        <input
+                            type="text"
+                            id="username"
+                            class="form-control"
+                            placeholder="Enter username"
+                            required>
+
+                    </div>
+
+
+                    <div class="mb-3">
+
+                        <label class="form-label fw-bold small">
+                            Password
+                        </label>
+
+                        <input
+                            type="password"
+                            id="password"
+                            class="form-control"
+                            placeholder="Enter password"
+                            required>
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary login-btn w-100">
+
+                        <i class="fa-solid fa-right-to-bracket me-1"></i>
+
+                        Login to Admin Portal
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- Bootstrap -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+
+<script>
+
+    /* =========================
+       ADMIN LOGIN
+    ========================= */
+
+    document
+        .getElementById('login-form')
+        .addEventListener('submit', async (e) => {
+
+            e.preventDefault();
+
+            const body = {
+
+                username:
+                    document.getElementById('username').value,
+
+                password:
+                    document.getElementById('password').value
+
+            };
+
+            try {
+
+                const res = await fetch('/api/login', {
+
+                    method: 'POST',
+
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+
+                    body: JSON.stringify(body)
+
+                });
+
+                const d = await res.json();
+
+                if (d.status === 'success') {
+
+                    window.location.href = '/admin';
+
+                } else {
+
+                    alert(d.message || 'Invalid credentials.');
+
+                }
+
+            } catch (error) {
+
+                alert('Unable to connect to the server.');
+
+            }
+
+        });
+
+
+    /* =========================
+       LOGOUT
+    ========================= */
+
+    async function logout() {
+
+        await fetch('/api/logout');
+
+        window.location.reload();
+
+    }
+
+
+    /* =========================
+       VOICE ASSISTANT
+    ========================= */
+
+    const voiceBtn =
+        document.getElementById('voice-btn');
+
+    const speechStatus =
+        document.getElementById('speech-status');
+
+
+    if (
+        'webkitSpeechRecognition' in window ||
+        'SpeechRecognition' in window
+    ) {
+
+        const SpeechRecognition =
+            window.SpeechRecognition ||
+            window.webkitSpeechRecognition;
+
+        const recognition =
+            new SpeechRecognition();
+
+        recognition.lang = 'en-IN';
+
+        recognition.continuous = false;
+
+        recognition.interimResults = false;
+
+
+        voiceBtn.addEventListener('click', () => {
+
+            try {
+
+                recognition.start();
+
+                voiceBtn.classList.add('listening');
+
+                voiceBtn.innerHTML =
+                    '<i class="fa-solid fa-waveform me-1"></i> Listening...';
+
+                speechStatus.innerText =
+                    'Listening for your command...';
+
+            } catch (error) {
+
+                console.log(error);
+
+            }
+
+        });
+
+
+        recognition.onresult = (e) => {
+
+            const cmd =
+                e.results[0][0]
+                .transcript
+                .toLowerCase();
+
+            speechStatus.innerText =
+                'You said: "' + cmd + '"';
+
+
+            if (cmd.includes('bus')) {
+
+                window.location.href = '/bus';
+
+            }
+
+            else if (
+                cmd.includes('outpass') ||
+                cmd.includes('out pass')
+            ) {
+
+                window.location.href = '/outpass';
+
+            }
+
+            else if (
+                cmd.includes('food') ||
+                cmd.includes('canteen')
+            ) {
+
+                window.location.href = '/food';
+
+            }
+
+            else if (
+                cmd.includes('announcement') ||
+                cmd.includes('update')
+            ) {
+
+                window.location.href = '/announce';
+
+            }
+
+            else if (
+                cmd.includes('notes') ||
+                cmd.includes('study')
+            ) {
+
+                window.location.href = '/ai-notes';
+
+            }
+
+            else if (
+                cmd.includes('market')
+            ) {
+
+                window.location.href = '/marketplace';
+
+            }
+
+            else if (
+                cmd.includes('sos') ||
+                cmd.includes('emergency')
+            ) {
+
+                window.location.href = '/sos';
+
+            }
+
+            else if (
+                cmd.includes('wheelchair') ||
+                cmd.includes('accessible')
+            ) {
+
+                window.location.href = '/wheelchair';
+
+            }
+
+            else if (
+                cmd.includes('visual') ||
+                cmd.includes('navigation') ||
+                cmd.includes('navigate')
+            ) {
+
+                window.location.href = '/virtual';
+
+            }
+
+            else {
+
+                speechStatus.innerText =
+                    'Sorry, I could not understand that command.';
+
+            }
+
+        };
+
+
+        recognition.onend = () => {
+
+            voiceBtn.classList.remove('listening');
+
+            voiceBtn.innerHTML =
+                '<i class="fa-solid fa-microphone me-1"></i> Speak';
+
+        };
+
+
+        recognition.onerror = () => {
+
+            voiceBtn.classList.remove('listening');
+
+            voiceBtn.innerHTML =
+                '<i class="fa-solid fa-microphone me-1"></i> Speak';
+
+            speechStatus.innerText =
+                'Microphone access or speech recognition failed.';
+
+        };
+
+    }
+
+    else {
+
+        voiceBtn.disabled = true;
+
+        voiceBtn.innerHTML =
+            '<i class="fa-solid fa-microphone-slash me-1"></i> Not Supported';
+
+        speechStatus.innerText =
+            'Voice recognition is not supported in this browser.';
+
+    }
+
+</script>
+
+</body>
+</html>
