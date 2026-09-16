@@ -1067,10 +1067,10 @@
     </section>
 
     <section id="learning" class="command-card ai-panel" style="margin-bottom:14px">
-        <div class="card-heading"><div><div class="section-kicker">AI-powered learning hub</div><h2>Learn smarter with Groq AI</h2><p>Choose a topic and generate an explanation, exam notes, or practice questions.</p></div><i class="fa-solid fa-wand-magic-sparkles" style="font-size:22px;color:#f2a65a"></i></div>
-        <div class="ai-controls"><div><label for="learn-subject">Subject name</label><select id="learn-subject"><option>AI & Neural Networks</option><option>Database Management Systems</option><option>Computer Networks</option><option>Data Structures</option></select></div><div><label for="learn-unit">Unit number</label><select id="learn-unit"><option>Unit 1</option><option>Unit 2</option><option>Unit 3</option><option>Unit 4</option></select></div><div><label for="learn-topic">Specific topic</label><select id="learn-topic"><option>Backpropagation and gradient descent</option><option>SQL normalisation</option><option>TCP congestion control</option><option>Graph traversal algorithms</option></select></div></div>
+        <div class="card-heading"><div><div class="section-kicker">Academic learning hub</div><h2>Academic Bot</h2><p>Select a subject, unit, and syllabus topic, then choose Learn, Notes, or Practice.</p></div><i class="fa-solid fa-graduation-cap" style="font-size:22px;color:#f2a65a"></i></div>
+        <div class="ai-controls"><div><label for="learn-subject">Subject</label><select id="learn-subject"><option>AI & Neural Networks</option><option>Database Management Systems</option><option>Computer Networks</option><option>Data Structures</option></select></div><div><label for="learn-unit">Unit</label><select id="learn-unit"><option>Unit 1</option><option>Unit 2</option><option>Unit 3</option><option>Unit 4</option></select></div><div><label for="learn-syllabus">Syllabus topic</label><select id="learn-syllabus"><option>Backpropagation and gradient descent</option><option>SQL normalisation</option><option>TCP congestion control</option><option>Graph traversal algorithms</option></select></div></div>
         <div class="ai-actions"><button class="ai-action active" type="button" data-ai-action="Learn"><i class="fa-solid fa-lightbulb me-1"></i>Learn</button><button class="ai-action" type="button" data-ai-action="Notes"><i class="fa-solid fa-note-sticky me-1"></i>Notes</button><button class="ai-action" type="button" data-ai-action="Practice"><i class="fa-solid fa-circle-question me-1"></i>Practice</button></div>
-        <div id="ai-dashboard-output" class="ai-output visible" aria-live="polite"><div class="ai-message assistant"><strong>ACEW AI TUTOR</strong>Ask me anything about your subjects, code, assignments, projects, interviews, internships, or career preparation.</div></div>
+        <div id="ai-dashboard-output" class="ai-output visible" aria-live="polite"><div class="ai-message assistant"><strong>ACADEMIC BOT</strong>Select your syllabus topic and choose Learn, Notes, or Practice.</div></div>
         <form id="ai-chat-form" class="ai-chat-row"><input id="ai-question" class="ai-question" type="text" maxlength="4000" placeholder="Ask anything... e.g. Explain backpropagation simply" autocomplete="off"><button class="ai-send" type="submit"><i class="fa-solid fa-paper-plane me-1"></i>Ask</button></form>
     </section>
 
@@ -1580,7 +1580,7 @@
     const addAIMessage = (role, content) => {
         const message = document.createElement('div');
         message.className = `ai-message ${role}`;
-        const label = role === 'user' ? 'YOU' : 'ACEW AI TUTOR';
+        const label = role === 'user' ? 'YOU' : 'ACADEMIC BOT';
         message.innerHTML = `<strong>${label}</strong>`;
         message.appendChild(document.createTextNode(content));
         aiOutput.appendChild(message);
@@ -1588,8 +1588,8 @@
         aiOutput.scrollTop = aiOutput.scrollHeight;
     };
 
-    const askGroq = async (question) => {
-        const response = await fetch('/api/groq-chat', {
+    const askAcademicBot = async (question) => {
+        const response = await fetch('/api/academic-chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
             credentials: 'same-origin',
@@ -1599,7 +1599,7 @@
                 context: {
                     subject: document.getElementById('learn-subject').value,
                     unit: document.getElementById('learn-unit').value,
-                    topic: document.getElementById('learn-topic').value
+                    topic: document.getElementById('learn-syllabus').value
                 }
             })
         });
@@ -1619,7 +1619,7 @@
         aiSend.disabled = true;
         aiSend.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
         try {
-            const answer = await askGroq(question);
+            const answer = await askAcademicBot(question);
             addAIMessage('assistant', answer);
             aiHistory.push({ role: 'assistant', content: answer });
         } catch (error) {
@@ -1641,7 +1641,7 @@
             const action = button.dataset.aiAction;
             const subject = document.getElementById('learn-subject').value;
             const unit = document.getElementById('learn-unit').value;
-            const topic = document.getElementById('learn-topic').value;
+            const topic = document.getElementById('learn-syllabus').value;
             const prompts = {
                 Learn: `Teach me ${topic} from ${subject}, ${unit}, step by step. Use a simple analogy, a practical example, and explain common mistakes.`,
                 Notes: `Create semester-exam-ready notes for ${topic} from ${subject}, ${unit}. Include definitions, key points, a diagram description, and important questions.`,
